@@ -47,6 +47,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     if (!nextOpen) resetForm();
   }
 
+  function requireFreshAiReview() {
+    if (draftedByAi) setReviewedAiDraft(false);
+  }
+
   function handleNaturalLanguageDraft() {
     if (!naturalLanguage.trim()) {
       toast.error("Describe the task first.");
@@ -151,6 +155,9 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-3" role="status">
               <p className="text-sm font-medium">AI draft ready for your review</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">Check every field before confirming. AI cannot add this ticket for you.</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground" aria-live="polite">
+                {reviewedAiDraft ? "Review confirmed for these fields." : "Any change requires you to confirm your review again."}
+              </p>
               <label htmlFor="review-ai-draft" className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
                 <input
                   id="review-ai-draft"
@@ -166,7 +173,17 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
           <div className="space-y-1.5">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" name="title" value={title} onChange={(event) => setTitle(event.target.value)} required autoFocus />
+            <Input
+              id="title"
+              name="title"
+              value={title}
+              onChange={(event) => {
+                requireFreshAiReview();
+                setTitle(event.target.value);
+              }}
+              required
+              autoFocus
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -176,7 +193,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 name="stream_id"
                 required
                 value={streamId}
-                onValueChange={(value) => setStreamId(value ?? "")}
+                onValueChange={(value) => {
+                  requireFreshAiReview();
+                  setStreamId(value ?? "");
+                }}
                 items={streams.map((s) => ({ value: s.id, label: s.name }))}
               >
                 <SelectTrigger><SelectValue placeholder="Pick a stream" /></SelectTrigger>
@@ -189,7 +209,15 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="priority">Priority</Label>
-              <Select name="priority" value={priority} onValueChange={(value) => setPriority(value ?? "medium")} items={PRIORITY_ITEMS}>
+              <Select
+                name="priority"
+                value={priority}
+                onValueChange={(value) => {
+                  requireFreshAiReview();
+                  setPriority(value ?? "medium");
+                }}
+                items={PRIORITY_ITEMS}
+              >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
@@ -204,11 +232,28 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="due_date">Due date</Label>
-              <Input id="due_date" name="due_date" type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
+              <Input
+                id="due_date"
+                name="due_date"
+                type="date"
+                value={dueDate}
+                onChange={(event) => {
+                  requireFreshAiReview();
+                  setDueDate(event.target.value);
+                }}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="recurrence">Recurrence</Label>
-              <Select name="recurrence" value={recurrence} onValueChange={(value) => setRecurrence(value ?? "none")} items={RECURRENCE_ITEMS}>
+              <Select
+                name="recurrence"
+                value={recurrence}
+                onValueChange={(value) => {
+                  requireFreshAiReview();
+                  setRecurrence(value ?? "none");
+                }}
+                items={RECURRENCE_ITEMS}
+              >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
@@ -223,7 +268,16 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
           <div className="space-y-1.5">
             <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" name="notes" rows={4} value={notes} onChange={(event) => setNotes(event.target.value)} />
+            <Textarea
+              id="notes"
+              name="notes"
+              rows={4}
+              value={notes}
+              onChange={(event) => {
+                requireFreshAiReview();
+                setNotes(event.target.value);
+              }}
+            />
           </div>
 
           <div className="flex justify-end">
