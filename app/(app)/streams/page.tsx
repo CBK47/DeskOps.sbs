@@ -1,6 +1,7 @@
 import { listStreams } from "@/lib/db/streams";
 import { StreamPill } from "@/components/stream/StreamPill";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { archiveStreamAction, createStreamAction, seedDemoWorkspaceAction } from "@/app/actions/streams";
@@ -51,9 +52,12 @@ export default async function StreamsPage() {
               <StreamPill name={s.name} color={s.color} />
               {s.archived && <span className="text-xs text-muted-foreground">archived</span>}
             </div>
-            <form action={archiveStreamAction.bind(null, s.id, !s.archived)}>
-              <Button type="submit" variant="ghost" size="sm">{s.archived ? "Unarchive" : "Archive"}</Button>
-            </form>
+            <div className="flex items-center gap-1">
+              {s.life_domain === "career" && !s.archived && <Link href={`/invoices/draft?stream=${s.id}`} className="rounded-lg px-2 py-1 text-sm text-cbk-blue hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Draft invoice</Link>}
+              <form action={archiveStreamAction.bind(null, s.id, !s.archived)}>
+                <Button type="submit" variant="ghost" size="sm">{s.archived ? "Unarchive" : "Archive"}</Button>
+              </form>
+            </div>
           </li>
         ))}
       </ul>

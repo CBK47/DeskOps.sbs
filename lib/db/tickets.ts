@@ -82,6 +82,18 @@ export async function getTicket(id: string) {
   return data;  // Ticket-with-stream object, or null when no row matched
 }
 
+export async function listClosedTicketsForStream(streamId: string): Promise<Ticket[]> {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase
+    .from("tickets")
+    .select("*")
+    .eq("stream_id", streamId)
+    .in("status", ["done", "cancelled"])
+    .order("closed_at", { ascending: false, nullsFirst: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function createTicket(input: Omit<TicketInsert, "user_id">): Promise<Ticket> {
   const supabase = createServerSupabase();
   // user_id defaults to auth.uid() at the DB level — no need to fetch the

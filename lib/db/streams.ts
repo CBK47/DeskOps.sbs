@@ -47,6 +47,13 @@ export async function createStream(input: { name: string; color?: string }): Pro
   return data;
 }
 
+export async function getStream(id: string): Promise<Stream | null> {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase.from("streams").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function archiveStream(id: string, archived: boolean): Promise<Stream> {
   const supabase = createServerSupabase();
   const { data, error } = await supabase
