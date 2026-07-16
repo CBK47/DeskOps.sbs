@@ -3,7 +3,7 @@ import { StreamPill } from "@/components/stream/StreamPill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { archiveStreamAction, createStreamAction, seedInitialStreamsAction } from "@/app/actions/streams";
+import { archiveStreamAction, createStreamAction, seedDemoWorkspaceAction } from "@/app/actions/streams";
 
 export const runtime = "edge";
 
@@ -21,8 +21,8 @@ export default async function StreamsPage() {
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Streams</h1>
         {streams.length === 0 && (
-          <form action={seedInitialStreamsAction}>
-            <Button type="submit" variant="secondary">Seed starter streams</Button>
+          <form action={seedDemoWorkspaceAction}>
+            <Button type="submit" variant="secondary">Set up demo workspace</Button>
           </form>
         )}
       </header>

@@ -45,6 +45,7 @@ export type Database = {
           color: string
           created_at: string
           id: string
+          life_domain: Database["public"]["Enums"]["life_domain"] | null
           name: string
           user_id: string
         }
@@ -53,6 +54,7 @@ export type Database = {
           color?: string
           created_at?: string
           id?: string
+          life_domain?: Database["public"]["Enums"]["life_domain"] | null
           name: string
           user_id?: string
         }
@@ -61,6 +63,7 @@ export type Database = {
           color?: string
           created_at?: string
           id?: string
+          life_domain?: Database["public"]["Enums"]["life_domain"] | null
           name?: string
           user_id?: string
         }
@@ -128,8 +131,10 @@ export type Database = {
     }
     Functions: {
       seed_initial_streams: { Args: never; Returns: undefined }
+      seed_demo_tickets: { Args: never; Returns: undefined }
     }
     Enums: {
+      life_domain: "health" | "career" | "money" | "family" | "love" | "friends" | "fun" | "spirituality"
       recurrence_rule: "none" | "daily" | "weekly" | "monthly" | "yearly"
       ticket_priority: "low" | "medium" | "high" | "urgent"
       ticket_status: "open" | "in_progress" | "done" | "cancelled"
@@ -263,6 +268,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      life_domain: ["health", "career", "money", "family", "love", "friends", "fun", "spirituality"],
       recurrence_rule: ["none", "daily", "weekly", "monthly", "yearly"],
       ticket_priority: ["low", "medium", "high", "urgent"],
       ticket_status: ["open", "in_progress", "done", "cancelled"],

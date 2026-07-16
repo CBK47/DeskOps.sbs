@@ -3,6 +3,7 @@ import type { Database } from "@/lib/db/types.gen";
 
 export type Stream = Database["public"]["Tables"]["streams"]["Row"];
 export type StreamInsert = Database["public"]["Tables"]["streams"]["Insert"];
+export type LifeDomain = Database["public"]["Enums"]["life_domain"];
 
 export function sortStreamsForPicker<T extends Pick<Stream, "name" | "archived">>(streams: T[]): T[] {
   return [...streams].sort((a, b) => {

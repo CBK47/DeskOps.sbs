@@ -33,3 +33,10 @@ export async function seedInitialStreamsAction() {
   if (error) throw error;
   redirect("/streams");
 }
+
+export async function seedDemoWorkspaceAction() {
+  const supabase = createClient();
+  const { error } = await supabase.rpc("seed_demo_tickets");
+  if (error) throw error;
+  redirect("/");
+}

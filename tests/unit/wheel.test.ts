@@ -1,0 +1,57 @@
+import { describe, expect, it } from "vitest";
+import { computeWheelScores } from "@/lib/wheel";
+
+const today = new Date("2026-07-16T12:00:00Z");
+const health = { id: "health", life_domain: "health" } as const;
+
+describe("computeWheelScores", () => {
+  it("keeps an all-done domain healthy", () => {
+    const scores = computeWheelScores([
+      { stream_id: "health", status: "done", due_date: "2026-07-10", closed_at: "2026-07-15T10:00:00Z" },
+    ], [health], today);
+
+    expect(scores.find((score) => score.domain === "health")).toMatchObject({
+      score: 10,
+      openCount: 0,
+      overdueCount: 0,
+    });
+  });
+
+  it("lowers a domain with many overdue items", () => {
+    const tickets = Array.from({ length: 8 }, (_, index) => ({
+      stream_id: "health",
+      status: "open" as const,
+      due_date: `2026-07-0${index + 1}`,
+      closed_at: null,
+    }));
+    const scores = computeWheelScores(tickets, [health], today);
+
+    expect(scores.find((score) => score.domain === "health")).toMatchObject({
+      score: 0,
+      openCount: 8,
+      overdueCount: 8,
+    });
+  });
+
+  it("greys a domain with no mapped stream", () => {
+    const scores = computeWheelScores([], [health], today);
+
+    expect(scores.find((score) => score.domain === "career")).toMatchObject({
+      score: null,
+      openCount: 0,
+      overdueCount: 0,
+    });
+  });
+
+  it("clamps scores into the zero-to-ten range", () => {
+    const tickets = Array.from({ length: 40 }, () => ({
+      stream_id: "health",
+      status: "open" as const,
+      due_date: "2026-06-01",
+      closed_at: null,
+    }));
+    const scores = computeWheelScores(tickets, [health], today);
+
+    expect(scores.find((score) => score.domain === "health")?.score).toBe(0);
+  });
+});
