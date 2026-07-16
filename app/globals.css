@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * CBK brand tokens applied to shadcn HSL variables.
+ * Source of truth: CBKSL-Sites/branding/tokens/*.json
+ * Dark theme is primary; light theme also supported.
+ */
+
+@layer base {
+  :root {
+    /* CBK light theme */
+    /* bg.primary #F8FAFC */
+    --background: 210 40% 98%;
+    /* text.primary #0F172A */
+    --foreground: 222 47% 11%;
+
+    /* bg.surface #FFFFFF */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* accent.blue #3A5BC7 — used as shadcn primary so buttons pick up CBK blue */
+    --primary: 228 55% 51%;
+    --primary-foreground: 0 0% 100%;
+
+    /* bg.deeper #F1F5F9 / accent.blue-muted */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 222 16% 40%;
+
+    /* shadcn "accent" hover surface — keep neutral so non-primary hovers don't go blue */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    /* state.error light #DC2626 */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* border.subtle / elevated */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 228 55% 51%;
+
+    --radius: 0.75rem;
+
+    /* CBK brand-specific tokens (consumable directly, e.g. var(--cbk-accent-blue)) */
+    --cbk-accent-blue: #3A5BC7;
+    --cbk-accent-blue-hover: #2D4BA7;
+    --cbk-accent-lavender: #7C6DBF;
+    --cbk-accent-sage: #5A7D6D;
+    --cbk-glow: 0 0 20px rgba(58, 91, 199, 0.3);
+    --cbk-glow-lg: 0 0 40px rgba(58, 91, 199, 0.4);
+    --cbk-glow-lavender: 0 0 20px rgba(124, 109, 191, 0.25);
+    --cbk-glass-bg: #FFFFFF;
+    --cbk-glass-border: rgba(0, 0, 0, 0.08);
+    --cbk-nav-bg: rgba(248, 250, 252, 0.95);
+    --cbk-text-secondary: rgba(15, 23, 42, 0.7);
+    --cbk-text-muted: rgba(15, 23, 42, 0.4);
+  }
+
+  .dark {
+    /* CBK dark theme (primary) */
+    /* bg.primary #080C14 */
+    --background: 220 43% 5.5%;
+    /* text.primary #EEF2FF */
+    --foreground: 226 100% 97%;
+
+    /* surface glass treatment lives in --cbk-glass-bg below;
+       shadcn card uses a slightly elevated solid so it renders cleanly */
+    --card: 220 43% 7%;
+    --card-foreground: 226 100% 97%;
+
+    --popover: 220 43% 7%;
+    --popover-foreground: 226 100% 97%;
+
+    /* accent.blue #3A5BC7 */
+    --primary: 228 55% 51%;
+    --primary-foreground: 226 100% 97%;
+
+    --secondary: 220 30% 14%;
+    --secondary-foreground: 226 100% 97%;
+
+    --muted: 220 30% 14%;
+    --muted-foreground: 226 30% 70%;
+
+    --accent: 220 30% 14%;
+    --accent-foreground: 226 100% 97%;
+
+    /* state.error dark #EF4444 */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 226 100% 97%;
+
+    /* border.subtle rgba(255,255,255,0.08) ≈ light slate */
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 228 55% 51%;
+
+    /* CBK dark-mode brand tokens */
+    --cbk-accent-blue: #3A5BC7;
+    --cbk-accent-blue-hover: #4A6BD7;
+    --cbk-accent-lavender: #8B7DCF;
+    --cbk-accent-sage: #6B9080;
+    --cbk-glow: 0 0 20px rgba(58, 91, 199, 0.3);
+    --cbk-glow-lg: 0 0 40px rgba(58, 91, 199, 0.4);
+    --cbk-glow-lavender: 0 0 20px rgba(139, 125, 207, 0.25);
+    --cbk-glass-bg: rgba(255, 255, 255, 0.024);
+    --cbk-glass-border: rgba(255, 255, 255, 0.08);
+    --cbk-nav-bg: rgba(8, 12, 20, 0.95);
+    --cbk-text-secondary: rgba(238, 242, 255, 0.7);
+    --cbk-text-muted: rgba(238, 242, 255, 0.35);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+    /* Single depth layer (DESIGN.md): fixed radial field in CBK blue.
+       Painted on body's own background so there are no stacking-context games. */
+    background-image: radial-gradient(
+      900px 500px at 50% -10%,
+      rgba(58, 91, 199, 0.06),
+      transparent 65%
+    );
+    background-attachment: fixed;
+  }
+  .dark body {
+    background-image: radial-gradient(
+      900px 500px at 50% -10%,
+      rgba(58, 91, 199, 0.1),
+      transparent 65%
+    );
+  }
+  code, kbd, samp, pre {
+    font-family: var(--font-mono), "JetBrains Mono", "SF Mono", Monaco, monospace;
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+  }
+  h1 {
+    letter-spacing: -0.03em;
+  }
+}
