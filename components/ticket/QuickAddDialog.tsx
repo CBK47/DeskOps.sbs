@@ -28,6 +28,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [recurrence, setRecurrence] = useState("none");
   const [notes, setNotes] = useState("");
   const [draftedByAi, setDraftedByAi] = useState(false);
+  const [reviewedAiDraft, setReviewedAiDraft] = useState(false);
 
   function resetForm() {
     setNaturalLanguage("");
@@ -38,6 +39,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     setRecurrence("none");
     setNotes("");
     setDraftedByAi(false);
+    setReviewedAiDraft(false);
   }
 
   function onOpenChange(nextOpen: boolean) {
@@ -51,7 +53,13 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       return;
     }
     startDraftTransition(async () => {
-      const result = await draftTicketAction(naturalLanguage);
+      let result: Awaited<ReturnType<typeof draftTicketAction>>;
+      try {
+        result = await draftTicketAction(naturalLanguage);
+      } catch {
+        toast.error("DeskOps could not draft a ticket. Please try again.");
+        return;
+      }
       if (!result.ok) {
         toast.error(result.error);
         return;
@@ -63,6 +71,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       setRecurrence(result.draft.recurrence);
       setNotes(result.draft.notes);
       setDraftedByAi(true);
+      setReviewedAiDraft(false);
       toast.success("Ticket draft ready to review");
     });
   }
@@ -73,6 +82,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   // insert partially succeeded before an error.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (draftedByAi && !reviewedAiDraft) {
+      toast.error("Review and confirm the AI draft before adding the ticket.");
+      return;
+    }
     const formData = new FormData(e.currentTarget);
     startSubmitTransition(async () => {
       // A stale Server Action reference (e.g. this tab loaded before a
@@ -84,7 +97,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       try {
         result = await createTicketSafe(null, formData);
       } catch {
-        toast.error("Failed to add ticket — please try again.");
+        toast.error("Failed to add ticket. Please try again.");
         router.refresh();
         return;
       }
@@ -93,7 +106,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
         toast.success("Ticket added");
         resetForm();
       } else {
-        toast.error(result?.error ?? "Failed to add ticket — please try again.");
+        toast.error(result?.error ?? "Failed to add ticket. Please try again.");
       }
       router.refresh();
     });
@@ -134,7 +147,22 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             <p className="mt-2 text-xs text-muted-foreground">DeskOps will pre-fill a draft for you to check before it is added.</p>
           </div>
 
-          {draftedByAi && <p className="text-xs text-cbk-blue dark:text-cbk-blue-hover">Drafted by AI, check me before adding.</p>}
+          {draftedByAi && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3" role="status">
+              <p className="text-sm font-medium">AI draft ready for your review</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">Check every field before confirming. AI cannot add this ticket for you.</p>
+              <label htmlFor="review-ai-draft" className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
+                <input
+                  id="review-ai-draft"
+                  type="checkbox"
+                  checked={reviewedAiDraft}
+                  onChange={(event) => setReviewedAiDraft(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <span>I have reviewed this AI draft.</span>
+              </label>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label htmlFor="title">Title</Label>
@@ -199,8 +227,8 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={pending}>
-              {pending ? "Adding…" : "Add ticket"}
+            <Button type="submit" disabled={pending || (draftedByAi && !reviewedAiDraft)}>
+              {pending ? "Adding…" : draftedByAi ? "Confirm and add ticket" : "Add ticket"}
             </Button>
           </div>
         </form>
