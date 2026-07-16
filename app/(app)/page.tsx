@@ -4,7 +4,7 @@ import { listStreams } from "@/lib/db/streams";
 import { TicketRow } from "@/components/ticket/TicketRow";
 import { TicketFilters } from "@/components/ticket/TicketFilters";
 import { WheelOfLife } from "@/components/wheel/WheelOfLife";
-import { computeWheelScores } from "@/lib/wheel";
+import { computeWheelScores, type LifeDomain } from "@/lib/wheel";
 import type { TicketFilters as TicketFilterValues } from "@/lib/db/tickets";
 
 export const runtime = "edge";
@@ -29,6 +29,10 @@ export default async function QueuePage({ searchParams }: { searchParams: Record
   ]);
   // Only needed to distinguish "no tickets at all" from "none match filters".
   const totalTickets = tickets.length === 0 ? await countAllTickets() : tickets.length;
+  const streamIdsByDomain = streams.reduce<Partial<Record<LifeDomain, string[]>>>((groups, stream) => {
+    if (stream.life_domain) (groups[stream.life_domain] ??= []).push(stream.id);
+    return groups;
+  }, {});
 
   return (
     <div className="space-y-4">
@@ -71,11 +75,7 @@ export default async function QueuePage({ searchParams }: { searchParams: Record
         </div>
         <WheelOfLife
           scores={computeWheelScores(wheelTickets, streams)}
-          streamIdsByDomain={Object.fromEntries(
-            streams
-              .filter((stream) => stream.life_domain)
-              .map((stream) => [stream.life_domain!, [stream.id]])
-          )}
+          streamIdsByDomain={streamIdsByDomain}
         />
       </div>
     </div>

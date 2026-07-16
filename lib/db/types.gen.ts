@@ -130,11 +130,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      seed_initial_streams: { Args: never; Returns: undefined }
       seed_demo_tickets: { Args: never; Returns: undefined }
+      seed_initial_streams: { Args: never; Returns: undefined }
     }
     Enums: {
-      life_domain: "health" | "career" | "money" | "family" | "love" | "friends" | "fun" | "spirituality"
+      life_domain:
+        | "health"
+        | "career"
+        | "money"
+        | "family"
+        | "love"
+        | "friends"
+        | "fun"
+        | "spirituality"
       recurrence_rule: "none" | "daily" | "weekly" | "monthly" | "yearly"
       ticket_priority: "low" | "medium" | "high" | "urgent"
       ticket_status: "open" | "in_progress" | "done" | "cancelled"
@@ -268,7 +276,16 @@ export const Constants = {
   },
   public: {
     Enums: {
-      life_domain: ["health", "career", "money", "family", "love", "friends", "fun", "spirituality"],
+      life_domain: [
+        "health",
+        "career",
+        "money",
+        "family",
+        "love",
+        "friends",
+        "fun",
+        "spirituality",
+      ],
       recurrence_rule: ["none", "daily", "weekly", "monthly", "yearly"],
       ticket_priority: ["low", "medium", "high", "urgent"],
       ticket_status: ["open", "in_progress", "done", "cancelled"],
