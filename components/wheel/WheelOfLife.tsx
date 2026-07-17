@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { LIFE_DOMAIN_LABELS, type LifeDomain, type WheelScore } from "@/lib/wheel";
+import { LIFE_DOMAIN_LABELS, type LifeDomain, type WheelScore, wheelFilterHref } from "@/lib/wheel";
 
 type WheelOfLifeProps = {
   scores: WheelScore[];
@@ -40,8 +40,8 @@ export function WheelOfLife({ scores, streamIdsByDomain }: WheelOfLifeProps) {
       <svg
         className="mx-auto mt-2 block w-full max-w-[20rem] overflow-visible"
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        role="img"
-        aria-label={`Wheel of Life queue health: ${summary}`}
+        aria-hidden="true"
+        focusable="false"
       >
         {[2, 4, 6, 8, 10].map((ring) => (
           <polygon
@@ -59,18 +59,18 @@ export function WheelOfLife({ scores, streamIdsByDomain }: WheelOfLifeProps) {
         {scores.map((score, index) => {
           const point = points[index];
           const label = LIFE_DOMAIN_LABELS[score.domain];
-          const href = domainHref(streamIdsByDomain[score.domain] ?? []);
+          const href = wheelFilterHref(streamIdsByDomain[score.domain] ?? []);
           const markerClass = score.score === null ? "text-muted-foreground" : DOMAIN_COLOURS[score.domain];
           const labelPoint = pointAt(index, 12.6);
           return (
             <g key={score.domain} className={markerClass}>
-              {href ? (
-                <a href={href} aria-label={`Filter queue to ${label}`}>
-                  <circle cx={point.x} cy={point.y} r="6" className="fill-current stroke-background" strokeWidth="2" />
-                </a>
-              ) : (
-                <circle cx={point.x} cy={point.y} r="4" className="fill-current/50" />
-              )}
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={href ? "6" : "4"}
+                className={href ? "fill-current stroke-background" : "fill-current/50"}
+                strokeWidth={href ? "2" : undefined}
+              />
               <text
                 x={labelPoint.x}
                 y={labelPoint.y}
@@ -85,16 +85,41 @@ export function WheelOfLife({ scores, streamIdsByDomain }: WheelOfLifeProps) {
         })}
       </svg>
 
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">Derived from open, overdue, and recently completed work. Select a coloured point to filter the queue.</p>
-      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">Derived from open, overdue, and recently completed work. Select a life domain below to filter the queue.</p>
+      <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs" aria-label={`Wheel of Life queue health: ${summary}`}>
         {scores.map((score) => (
-          <div key={score.domain} className="flex items-center justify-between gap-2">
-            <dt className="truncate text-muted-foreground">{LIFE_DOMAIN_LABELS[score.domain]}</dt>
-            <dd className={cn("font-mono tabular-nums", score.score === null && "text-muted-foreground")}>{score.score === null ? "—" : `${score.score}/10`}</dd>
-          </div>
+          <li key={score.domain}>
+            <WheelScoreRow
+              label={LIFE_DOMAIN_LABELS[score.domain]}
+              score={score.score}
+              href={wheelFilterHref(streamIdsByDomain[score.domain] ?? [])}
+            />
+          </li>
         ))}
-      </dl>
+      </ul>
     </section>
+  );
+}
+
+function WheelScoreRow({ label, score, href }: { label: string; score: number | null; href: string | null }) {
+  const value = score === null ? "No score" : `${score}/10`;
+  const content = (
+    <>
+      <span className="truncate text-muted-foreground">{label}</span>
+      <span className={cn("font-mono tabular-nums", score === null && "text-muted-foreground")}>{value}</span>
+    </>
+  );
+
+  if (!href) return <div className="flex min-h-8 items-center justify-between gap-2 px-1">{content}</div>;
+
+  return (
+    <a
+      href={href}
+      aria-label={`Filter queue to ${label}, ${value}`}
+      className="flex min-h-8 items-center justify-between gap-2 rounded-md px-1 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:translate-y-px motion-reduce:transform-none"
+    >
+      {content}
+    </a>
   );
 }
 
@@ -112,11 +137,4 @@ function textAnchor(x: number) {
   if (x < CENTRE - 8) return "end";
   if (x > CENTRE + 8) return "start";
   return "middle";
-}
-
-function domainHref(streamIds: string[]) {
-  if (!streamIds.length) return null;
-  const params = new URLSearchParams();
-  streamIds.forEach((id) => params.append("stream", id));
-  return `/?${params.toString()}`;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeWheelScores } from "@/lib/wheel";
+import { computeWheelScores, wheelFilterHref } from "@/lib/wheel";
 
 const today = new Date("2026-07-16T12:00:00Z");
 const health = { id: "health", life_domain: "health" } as const;
@@ -53,5 +53,15 @@ describe("computeWheelScores", () => {
     const scores = computeWheelScores(tickets, [health], today);
 
     expect(scores.find((score) => score.domain === "health")?.score).toBe(0);
+  });
+});
+
+describe("wheelFilterHref", () => {
+  it("preserves every mapped stream when filtering a life domain", () => {
+    expect(wheelFilterHref(["home and family", "family-admin"])).toBe("/?stream=home+and+family&stream=family-admin");
+  });
+
+  it("does not offer a filter for an unmapped life domain", () => {
+    expect(wheelFilterHref([])).toBeNull();
   });
 });

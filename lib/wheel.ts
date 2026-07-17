@@ -67,6 +67,13 @@ export function computeWheelScores(
   });
 }
 
+export function wheelFilterHref(streamIds: readonly string[]): string | null {
+  if (!streamIds.length) return null;
+  const params = new URLSearchParams();
+  streamIds.forEach((id) => params.append("stream", id));
+  return `/?${params.toString()}`;
+}
+
 function isOverdue(dueDate: string | null, today: Date): boolean {
   if (!dueDate) return false;
   return new Date(`${dueDate}T00:00:00`) < today;
