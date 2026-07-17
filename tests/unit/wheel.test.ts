@@ -54,6 +54,25 @@ describe("computeWheelScores", () => {
 
     expect(scores.find((score) => score.domain === "health")?.score).toBe(0);
   });
+
+  it("uses the London calendar day for overdue work", () => {
+    const scores = computeWheelScores([
+      { stream_id: "health", status: "open", due_date: "2026-07-17", closed_at: null },
+    ], [health], new Date("2026-07-17T23:30:00Z"));
+
+    expect(scores.find((score) => score.domain === "health")).toMatchObject({
+      score: 8.2,
+      overdueCount: 1,
+    });
+  });
+
+  it("counts work completed earlier on the current London day", () => {
+    const scores = computeWheelScores([
+      { stream_id: "health", status: "done", due_date: null, closed_at: "2026-07-17T23:00:00Z" },
+    ], [health], new Date("2026-07-17T23:30:00Z"));
+
+    expect(scores.find((score) => score.domain === "health")).toMatchObject({ score: 10 });
+  });
 });
 
 describe("wheelFilterHref", () => {

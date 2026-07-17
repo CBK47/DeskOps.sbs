@@ -1,6 +1,7 @@
 import type { LifeDomain, Stream } from "@/lib/db/streams";
 import type { TicketPriority, RecurrenceRule } from "@/lib/db/tickets";
 import { getOpenAIClient } from "@/lib/agent/openai";
+import { toLondonIsoDate } from "@/lib/dates";
 
 const PRIORITIES: TicketPriority[] = ["low", "medium", "high", "urgent"];
 const RECURRENCES: RecurrenceRule[] = ["none", "daily", "weekly", "monthly", "yearly"];
@@ -144,18 +145,6 @@ function isLifeDomain(value: unknown): value is LifeDomain {
 
 function normalise(value: string) {
   return value.trim().toLocaleLowerCase("en-GB").replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-export function toLondonIsoDate(date: Date) {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/London",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-
-  return `${values.year}-${values.month}-${values.day}`;
 }
 
 function toLocalIsoDate(date: Date) {

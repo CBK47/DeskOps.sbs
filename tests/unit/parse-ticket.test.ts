@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { normaliseTicketCandidate, toLondonIsoDate } from "@/lib/agent/parseTicket";
+import { normaliseTicketCandidate } from "@/lib/agent/parseTicket";
+import { toLondonIsoDate } from "@/lib/dates";
 
 const streams = [
   { id: "home", name: "Home", life_domain: null, archived: false },

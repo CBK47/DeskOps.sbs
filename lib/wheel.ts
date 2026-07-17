@@ -1,5 +1,6 @@
 import type { Stream } from "@/lib/db/streams";
 import type { Ticket } from "@/lib/db/tickets";
+import { toLondonIsoDate } from "@/lib/dates";
 
 export const LIFE_DOMAINS = [
   "health",
@@ -35,15 +36,12 @@ export type WheelScore = {
 type WheelTicket = Pick<Ticket, "stream_id" | "status" | "due_date" | "closed_at">;
 type WheelStream = Pick<Stream, "id" | "life_domain">;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 export function computeWheelScores(
   tickets: WheelTicket[],
   streams: WheelStream[],
   today = new Date(),
 ): WheelScore[] {
-  const todayStart = new Date(today);
-  todayStart.setHours(0, 0, 0, 0);
+  const todayInLondon = toLondonIsoDate(today);
 
   return LIFE_DOMAINS.map((domain) => {
     const streamIds = new Set(streams.filter((stream) => stream.life_domain === domain).map((stream) => stream.id));
@@ -51,8 +49,8 @@ export function computeWheelScores(
 
     const domainTickets = tickets.filter((ticket) => streamIds.has(ticket.stream_id));
     const openTickets = domainTickets.filter((ticket) => ticket.status === "open" || ticket.status === "in_progress");
-    const overdueCount = openTickets.filter((ticket) => isOverdue(ticket.due_date, todayStart)).length;
-    const recentClosed = domainTickets.filter((ticket) => isRecentClose(ticket.closed_at, todayStart)).length;
+    const overdueCount = openTickets.filter((ticket) => isOverdue(ticket.due_date, todayInLondon)).length;
+    const recentClosed = domainTickets.filter((ticket) => isRecentClose(ticket.closed_at, today, todayInLondon)).length;
 
     // The score is a queue-health signal, not a self-assessment. Open work has
     // a modest cost, overdue work has a larger one, and recent completion gives
@@ -74,15 +72,18 @@ export function wheelFilterHref(streamIds: readonly string[]): string | null {
   return `/?${params.toString()}`;
 }
 
-function isOverdue(dueDate: string | null, today: Date): boolean {
-  if (!dueDate) return false;
-  return new Date(`${dueDate}T00:00:00`) < today;
+function isOverdue(dueDate: string | null, todayInLondon: string): boolean {
+  return dueDate !== null && dueDate < todayInLondon;
 }
 
-function isRecentClose(closedAt: string | null, today: Date): boolean {
+function isRecentClose(closedAt: string | null, today: Date, todayInLondon: string): boolean {
   if (!closedAt) return false;
   const closed = new Date(closedAt);
-  return closed <= today && today.getTime() - closed.getTime() <= 14 * DAY_MS;
+  if (Number.isNaN(closed.getTime()) || closed > today) return false;
+
+  const closedInLondon = toLondonIsoDate(closed);
+  const daysSinceClose = (Date.parse(`${todayInLondon}T00:00:00Z`) - Date.parse(`${closedInLondon}T00:00:00Z`)) / 86_400_000;
+  return daysSinceClose >= 0 && daysSinceClose <= 14;
 }
 
 function clampToTen(value: number): number {
