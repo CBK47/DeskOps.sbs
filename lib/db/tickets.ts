@@ -1,5 +1,6 @@
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Database } from "@/lib/db/types.gen";
+import { toLondonIsoDate } from "@/lib/dates";
 
 export type Ticket          = Database["public"]["Tables"]["tickets"]["Row"];
 export type TicketInsert    = Database["public"]["Tables"]["tickets"]["Insert"];
@@ -30,6 +31,13 @@ export function parseTicketFilters(params: URLSearchParams): TicketFilters {
   return { status, streamIds, priorities, due };
 }
 
+export function dueDateBounds(window: Exclude<DueWindow, "any" | "none">, now = new Date()) {
+  const today = toLondonIsoDate(now);
+  if (window === "overdue" || window === "today") return { today };
+
+  return { today, weekEnd: addCalendarDays(today, 7) };
+}
+
 export async function listTickets(filters: TicketFilters): Promise<(Ticket & { stream: { id: string; name: string; color: string } })[]> {
   const supabase = createServerSupabase();
   let q = supabase
@@ -43,16 +51,15 @@ export async function listTickets(filters: TicketFilters): Promise<(Ticket & { s
   if (filters.streamIds.length)  q = q.in("stream_id", filters.streamIds);
   if (filters.priorities.length) q = q.in("priority",  filters.priorities);
 
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const iso = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const inDays = (n: number) => { const d = new Date(today); d.setDate(d.getDate() + n); return d; };
-
   switch (filters.due) {
-    case "overdue": q = q.lt("due_date", iso(today)); break;
-    case "today":   q = q.eq("due_date", iso(today)); break;
-    case "week":    q = q.gte("due_date", iso(today)).lte("due_date", iso(inDays(7))); break;
-    case "later":   q = q.gt("due_date", iso(inDays(7))); break;
+    case "overdue": q = q.lt("due_date", dueDateBounds("overdue").today); break;
+    case "today":   q = q.eq("due_date", dueDateBounds("today").today); break;
+    case "week": {
+      const { today, weekEnd } = dueDateBounds("week");
+      q = q.gte("due_date", today).lte("due_date", weekEnd);
+      break;
+    }
+    case "later":   q = q.gt("due_date", dueDateBounds("later").weekEnd); break;
     case "none":    q = q.is("due_date", null); break;
     case "any":     break;
   }
@@ -60,6 +67,12 @@ export async function listTickets(filters: TicketFilters): Promise<(Ticket & { s
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as unknown as (Ticket & { stream: { id: string; name: string; color: string } })[];
+}
+
+function addCalendarDays(isoDate: string, days: number) {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
 export async function countAllTickets(): Promise<number> {

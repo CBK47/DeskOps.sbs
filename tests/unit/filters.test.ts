@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseTicketFilters, type TicketFilters } from "@/lib/db/tickets";
+import { dueDateBounds, parseTicketFilters, type TicketFilters } from "@/lib/db/tickets";
 
 describe("parseTicketFilters", () => {
   it("defaults to open status, no other filters", () => {
@@ -39,5 +39,18 @@ describe("parseTicketFilters", () => {
   it("keeps valid values and drops invalid ones in a mixed param", () => {
     const f = parseTicketFilters(new URLSearchParams("status=done&status=banana"));
     expect(f.status).toEqual(["done"]);
+  });
+});
+
+describe("dueDateBounds", () => {
+  it("uses the London calendar date when the edge runtime is still on the prior UTC day", () => {
+    expect(dueDateBounds("today", new Date("2026-07-17T23:30:00Z"))).toEqual({ today: "2026-07-18" });
+  });
+
+  it("uses calendar days for the week boundary across the clock change", () => {
+    expect(dueDateBounds("week", new Date("2026-10-24T23:30:00Z"))).toEqual({
+      today: "2026-10-25",
+      weekEnd: "2026-11-01",
+    });
   });
 });
