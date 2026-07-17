@@ -29,6 +29,11 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [notes, setNotes] = useState("");
   const [draftedByAi, setDraftedByAi] = useState(false);
   const [reviewedAiDraft, setReviewedAiDraft] = useState(false);
+  const [draftSourceText, setDraftSourceText] = useState("");
+
+  const trimmedNaturalLanguage = naturalLanguage.trim();
+  const aiDraftNeedsRefresh = draftedByAi && trimmedNaturalLanguage !== draftSourceText;
+  const aiReviewMessage = getAiReviewMessage(aiDraftNeedsRefresh, reviewedAiDraft);
 
   function resetForm() {
     setNaturalLanguage("");
@@ -40,6 +45,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     setNotes("");
     setDraftedByAi(false);
     setReviewedAiDraft(false);
+    setDraftSourceText("");
   }
 
   function onOpenChange(nextOpen: boolean) {
@@ -49,6 +55,13 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
   function requireFreshAiReview() {
     if (draftedByAi) setReviewedAiDraft(false);
+  }
+
+  function onNaturalLanguageChange(value: string) {
+    setNaturalLanguage(value);
+    if (draftedByAi && value.trim() !== draftSourceText) {
+      setReviewedAiDraft(false);
+    }
   }
 
   function handleNaturalLanguageDraft() {
@@ -76,6 +89,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       setNotes(result.draft.notes);
       setDraftedByAi(true);
       setReviewedAiDraft(false);
+      setDraftSourceText(trimmedNaturalLanguage);
       toast.success("Ticket draft ready to review");
     });
   }
@@ -86,6 +100,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   // insert partially succeeded before an error.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (aiDraftNeedsRefresh) {
+      toast.error("Redraft the AI ticket after changing the description.");
+      return;
+    }
     if (draftedByAi && !reviewedAiDraft) {
       toast.error("Review and confirm the AI draft before adding the ticket.");
       return;
@@ -140,12 +158,12 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Input
                 id="natural-language"
                 value={naturalLanguage}
-                onChange={(event) => setNaturalLanguage(event.target.value)}
+                onChange={(event) => onNaturalLanguageChange(event.target.value)}
                 maxLength={1200}
                 placeholder="e.g. renew the van insurance next Friday"
               />
               <Button type="button" variant="secondary" onClick={handleNaturalLanguageDraft} disabled={drafting}>
-                {drafting ? "Drafting…" : "Draft"}
+                {drafting ? "Drafting…" : draftedByAi ? "Redraft" : "Draft"}
               </Button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">DeskOps will pre-fill a draft for you to check before it is added.</p>
@@ -156,7 +174,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <p className="text-sm font-medium">AI draft ready for your review</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">Check every field before confirming. AI cannot add this ticket for you.</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground" aria-live="polite">
-                {reviewedAiDraft ? "Review confirmed for these fields." : "Any change requires you to confirm your review again."}
+                {aiReviewMessage}
               </p>
               <label htmlFor="review-ai-draft" className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
                 <input
@@ -164,6 +182,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                   type="checkbox"
                   checked={reviewedAiDraft}
                   onChange={(event) => setReviewedAiDraft(event.target.checked)}
+                  disabled={aiDraftNeedsRefresh}
                   className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 <span>I have reviewed this AI draft.</span>
@@ -281,7 +300,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={pending || (draftedByAi && !reviewedAiDraft)}>
+            <Button type="submit" disabled={pending || aiDraftNeedsRefresh || (draftedByAi && !reviewedAiDraft)}>
               {pending ? "Adding…" : draftedByAi ? "Confirm and add ticket" : "Add ticket"}
             </Button>
           </div>
@@ -290,4 +309,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       </Dialog>
     </>
   );
+}
+
+function getAiReviewMessage(needsRefresh: boolean, reviewed: boolean) {
+  if (needsRefresh) return "The description changed after this draft was generated. Redraft before adding the ticket.";
+  if (reviewed) return "Review confirmed for these fields.";
+  return "Any change requires you to confirm your review again.";
 }

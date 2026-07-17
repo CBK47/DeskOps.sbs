@@ -39,6 +39,7 @@ The Build Week work begins after that commit:
 ## Human approval boundaries
 
 - AI proposes ticket fields. The user submits the existing form to write a ticket.
+- Editing an AI-filled field clears approval. Editing the original description requires a fresh draft and another review.
 - AI may polish invoice text only. Quantities, rates, subtotals, and totals are deterministic.
 - Invoice drafts are not saved, exported, or sent.
 
