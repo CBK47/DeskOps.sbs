@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/frontend/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -11,13 +12,21 @@
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/frontend/coverage/
+/frontend/test-results/
+/frontend/playwright-report/
+/frontend/playwright/.cache/
 
 # next.js
 /.next/
 /out/
+/frontend/.next/
+/frontend/out/
+/frontend/.open-next/
 
 # production
 /build
+/frontend/build/
 
 # misc
 .DS_Store
@@ -33,11 +42,17 @@ yarn-error.log*
 
 # vercel
 .vercel
+/frontend/.vercel/
 
 # wrangler local dev
 .wrangler
 .dev.vars
+/frontend/.wrangler/
+/frontend/.dev.vars
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only personal customisations
+/personal/

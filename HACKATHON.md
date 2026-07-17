@@ -12,13 +12,15 @@ DeskOps turns life admin into one intelligent queue, then makes imbalance visibl
 
 The prior DeskOps MVP was imported as one sanitised baseline commit:
 
-`5301bb2 chore: import existing DeskOps (prior work)`
+`chore: import existing DeskOps (prior work)`
 
 The Build Week work begins after that commit:
 
-1. `af9feaa feat: add life domains and Wheel of Life`
-2. `f565d8f feat: draft tickets from natural language`
-3. `8578803 feat: add reviewable Career invoice drafts`
+1. `feat: add life domains and Wheel of Life`
+2. `feat: draft tickets from natural language`
+3. `feat: add reviewable Career invoice drafts`
+
+Commit hashes were intentionally omitted because the public history was rebuilt to normalise the maintainer identity and remove stale private identifiers while preserving the sequence and prior-work boundary.
 
 ### Demo flow
 
@@ -33,7 +35,7 @@ The Build Week work begins after that commit:
 - OpenAI Responses API with `OPENAI_MODEL=gpt-5.6`
 - Next.js 14, React 18, TypeScript, and Tailwind CSS
 - Supabase Auth, Postgres, and row-level security
-- Cloudflare Pages
+- Cloudflare Workers through OpenNext
 - Vitest and Playwright
 
 ## Human approval boundaries
@@ -54,8 +56,9 @@ The Build Week work begins after that commit:
 
 ## Submission checklist
 
-- [ ] Add the core Codex `/feedback` Session ID here: `PENDING`
+- [x] Record the Codex rebuild session ID: `019f6cac-1f8d-7111-a538-a0f0171070d5`
+- [x] Publish the public source repository as `CBK47/DeskOps.sbs`.
 - [ ] Add a public demo video under three minutes.
-- [ ] Configure `OPENAI_API_KEY` and `OPENAI_MODEL` in Cloudflare Pages.
+- [ ] Configure `OPENAI_API_KEY` and `OPENAI_MODEL` as Cloudflare Worker secrets.
 - [ ] Apply the Supabase migrations and seed only generic demo data.
 - [ ] Verify the deployed Google sign-in, Wheel, AI draft, and invoice draft.

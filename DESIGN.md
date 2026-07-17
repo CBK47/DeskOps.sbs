@@ -1,4 +1,4 @@
-# DeskOps — Design Contract
+# DeskOps: Design Contract
 
 Read this before any UI change. Deviations must be deliberate and explainable.
 
@@ -9,9 +9,9 @@ Dark theme is primary; light is fully supported, not an inversion.
 
 ## Tokens
 
-Single source of truth: `app/globals.css` (shadcn HSL vars + `--cbk-*`) and
-`tailwind.config.ts` (`cbk.*` palette, `shadow-glow*`, `gradient-cbk*`).
-Never hardcode hex in components — consume tokens.
+Single source of truth: `frontend/app/globals.css` (shadcn HSL vars + `--cbk-*`) and
+`frontend/tailwind.config.ts` (`cbk.*` palette, `shadow-glow*`, `gradient-cbk*`).
+Never hardcode hex in components; consume tokens.
 
 - Accent: CBK blue `#3A5BC7` (`--primary`, `bg-cbk-blue`)
 - Dark bg `#080C14` / light bg `#F8FAFC`
@@ -20,13 +20,13 @@ Never hardcode hex in components — consume tokens.
 ## Typography
 
 - **Manrope** (display + body) / **JetBrains Mono** (code, timestamps, counts). Two fonts, never three.
-- Headings: `-0.02em` tracking (h1 `-0.03em`) — set globally, don't repeat.
-- Dates, counts, IDs: `font-mono tabular-nums` — data reads as data.
+- Headings: `-0.02em` tracking (h1 `-0.03em`); set globally and do not repeat it.
+- Dates, counts, IDs: `font-mono tabular-nums`; data reads as data.
 - Body line-height 1.6, ≤75ch.
 
 ## Spacing
 
-4px base unit. Tailwind scale only — no arbitrary pixel values in components.
+4px base unit. Tailwind scale only; no arbitrary pixel values in components.
 Page container: `max-w-5xl px-4`. Section rhythm: `space-y-4` (queue) / `space-y-6` (forms).
 
 ## Color-coded chips (streams, priorities, statuses)
@@ -43,7 +43,7 @@ Alpha-tinted dark backgrounds sit on any surface; 300-level text passes AA on `#
 ## Labels
 
 No raw enum values in the UI, ever. `in_progress` → "In progress".
-Single source: `lib/ticket-options.ts` (`*_ITEMS` arrays + `*_LABELS` records).
+Single source: `frontend/lib/ticket-options.ts` (`*_ITEMS` arrays + `*_LABELS` records).
 
 ## Motion (Emil Kowalski rules)
 
@@ -75,5 +75,5 @@ buttons `rounded-lg`, the FAB is the one `rounded-full`. Don't flatten to one ra
 
 - Base UI `<Select>` needs an `items` prop or the trigger renders raw values.
 - Server actions must NOT wrap DB calls in try/catch when they also `redirect()` (edge runtime crash).
-- No `supabase.auth.getUser()` before inserts — `user_id` defaults to `auth.uid()` in the DB.
+- No `supabase.auth.getUser()` before inserts; `user_id` defaults to `auth.uid()` in the DB.
 - Tailwind is v3: no `outline-hidden`, `not-*`, `**:`, `in-data-*` variants (silently dropped).

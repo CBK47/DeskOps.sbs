@@ -1,0 +1,2 @@
+# Copy to .dev.vars only when you need Cloudflare Workers local bindings.
+NEXTJS_ENV=development

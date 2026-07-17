@@ -1,4 +1,4 @@
-# DeskOps
+# DeskOps.sbs
 
 **A personal operations desk for the things life keeps throwing at you.**
 
@@ -6,7 +6,7 @@ DeskOps brings the clarity of a service desk to life admin. Capture a task once,
 
 DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It was extended during Build Week with a GPT-5.6 draft agent, a live Wheel of Life, and review-only Career invoice drafts.
 
-**Live app:** https://deskops.pages.dev
+**Project domain:** [deskops.sbs](https://deskops.sbs)
 
 ## What works today
 
@@ -24,27 +24,27 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 
 - Next.js 14, React 18, TypeScript, Tailwind CSS, and shadcn/ui
 - Supabase for Postgres, authentication, and row-level security
-- Cloudflare Pages for deployment
+- Cloudflare Workers through OpenNext for deployment
 - Vitest and Playwright for testing
 
 ## Run it locally
 
 ### Prerequisites
 
-- Node.js 20 or newer
+- Node.js 22 or newer
 - A Supabase project with Google OAuth configured
 - Supabase CLI, only if you want to apply migrations locally
 
 ### Setup
 
 ```bash
-git clone https://github.com/CBK47/deskops.git
-cd deskops
+git clone https://github.com/CBK47/DeskOps.sbs.git
+cd DeskOps.sbs
 npm install
-cp .env.example .env.local
+cp frontend/.env.example frontend/.env.local
 ```
 
-Add your public Supabase project values to `.env.local`:
+Add your Supabase project values and server-only OpenAI key to `frontend/.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
@@ -69,6 +69,34 @@ npm run dev
 
 Open http://localhost:3000.
 
+### Optional Supabase keepalive worker
+
+The scheduled worker in `frontend/keepalive/` is optional. It has no project-specific values in source control. If you use it, configure the target project in Cloudflare before deployment:
+
+```bash
+cd frontend/keepalive
+wrangler secret put SUPABASE_URL
+wrangler secret put SUPABASE_ANON_KEY
+wrangler deploy
+```
+
+Use the generic `frontend/keepalive/.dev.vars.example` only as a local template. The worker never needs a Supabase service-role key.
+
+### Deploy the app to Cloudflare Workers
+
+Set the application configuration in Cloudflare before the first deploy. The Supabase URL and anon key are browser-visible by design, while the OpenAI key and model remain server-only.
+
+```bash
+cd frontend
+wrangler secret put NEXT_PUBLIC_SUPABASE_URL
+wrangler secret put NEXT_PUBLIC_SUPABASE_ANON_KEY
+wrangler secret put OPENAI_API_KEY
+wrangler secret put OPENAI_MODEL
+npm run worker:deploy
+```
+
+The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudflare account step.
+
 ## Useful commands
 
 | Command | Purpose |
@@ -79,17 +107,23 @@ Open http://localhost:3000.
 | `npm run test` | Run Vitest unit tests |
 | `npm run test:e2e` | Run Playwright end-to-end tests |
 | `npm run build` | Create a production build |
-| `npm run pages:build` | Build for Cloudflare Pages |
-| `npm run pages:deploy` | Build and deploy to Cloudflare Pages |
+| `npm run worker:build` | Build the Cloudflare Worker with OpenNext |
+| `npm run worker:preview` | Build and preview the Worker locally |
+| `npm run worker:deploy` | Build and deploy the Worker to Cloudflare |
+| `npm run seed:personal` | Apply an optional Git-ignored personal stream seed to the linked Supabase project |
 
 ## Architecture
 
-- `app/(app)/` contains authenticated product routes.
-- `app/(auth)/` contains sign-in and callback routes.
-- `app/actions/` holds server actions for tickets and streams.
-- `components/ticket/` and `components/stream/` hold the product UI.
-- `lib/db/` contains typed Supabase access helpers.
+- `frontend/` contains the complete Next.js application, tests, PWA assets, and Cloudflare configuration.
+- `frontend/app/(app)/` contains authenticated product routes.
+- `frontend/app/(auth)/` contains sign-in and callback routes.
+- `frontend/app/actions/` holds server actions for tickets and streams.
+- `frontend/components/` holds the product UI.
+- `frontend/lib/db/` contains typed Supabase access helpers.
 - `supabase/migrations/` is the source of truth for the database schema.
+- `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
+
+The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See [docs/PERSONAL.md](docs/PERSONAL.md) before adding local personal data.
 
 ## OpenAI configuration
 
@@ -112,9 +146,9 @@ See [HACKATHON.md](HACKATHON.md) for the Build Week scope, prior-work boundary, 
 
 ## Built with Codex
 
-DeskOps is created by CBK47 with OpenAI Codex and GPT-5.6 for OpenAI Build Week. Codex accelerated the architecture, database migrations, deterministic tests, product UI, and documentation. The repository history starts with a sanitised prior-work import, followed by the Build Week feature commits.
+DeskOps is created by CBK47 with OpenAI Codex and GPT-5.6 for OpenAI Build Week. Codex accelerated the architecture, database migrations, deterministic tests, product UI, security review, repository rebuild, and documentation. The repository history preserves the sanitised prior-work boundary followed by the Build Week feature commits.
 
-To complete the Devpost submission, add the `/feedback` Session ID for the core Build Week Codex session to `HACKATHON.md`.
+This public repository rebuild was completed in Codex session `019f6cac-1f8d-7111-a538-a0f0171070d5`. See [HACKATHON.md](HACKATHON.md) for the submission record and [docs/REBUILD.md](docs/REBUILD.md) for the repository arrangement.
 
 Ideas, issue reports, and early contributors are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
