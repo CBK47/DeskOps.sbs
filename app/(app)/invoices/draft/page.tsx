@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InvoiceDraftPanel } from "@/components/invoice/InvoiceDraftPanel";
-import { buildInvoiceDraft } from "@/lib/agent/draftInvoice";
+import { buildInvoiceDraft, parseHourlyRate } from "@/lib/agent/draftInvoice";
 import { getStream } from "@/lib/db/streams";
 import { listClosedTicketsForStream } from "@/lib/db/tickets";
 
@@ -16,9 +16,9 @@ export default async function InvoiceDraftPage({ searchParams }: { searchParams:
   const stream = await getStream(streamId);
   if (!stream || stream.life_domain !== "career") notFound();
 
-  const rate = parseRate(searchParams.rate);
+  const rateResult = parseHourlyRate(searchParams.rate);
   const tickets = await listClosedTicketsForStream(stream.id);
-  const draft = buildInvoiceDraft(tickets, rate);
+  const draft = buildInvoiceDraft(tickets, rateResult.rate);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -31,7 +31,23 @@ export default async function InvoiceDraftPage({ searchParams }: { searchParams:
           <input type="hidden" name="stream" value={stream.id} />
           <div className="space-y-1.5">
             <Label htmlFor="rate">Hourly rate</Label>
-            <Input id="rate" name="rate" type="number" min="0.01" max="10000" step="0.01" defaultValue={rate} className="w-28" />
+            <Input
+              id="rate"
+              name="rate"
+              type="number"
+              min="0.01"
+              max="10000"
+              step="0.01"
+              defaultValue={rateResult.rate}
+              aria-describedby={rateResult.valid ? undefined : "rate-help"}
+              aria-invalid={!rateResult.valid}
+              className="w-28"
+            />
+            {!rateResult.valid && (
+              <p id="rate-help" className="max-w-56 text-xs leading-5 text-destructive" role="status">
+                Use a rate from £0.01 to £10,000 with no more than two decimal places. £85 has been restored.
+              </p>
+            )}
           </div>
           <Button type="submit" variant="secondary">Update</Button>
         </form>
@@ -39,9 +55,4 @@ export default async function InvoiceDraftPage({ searchParams }: { searchParams:
       <InvoiceDraftPanel draft={draft} />
     </div>
   );
-}
-
-function parseRate(value: string | undefined) {
-  const parsed = Number(value ?? "85");
-  return Number.isFinite(parsed) && parsed >= 0.01 && parsed <= 10_000 ? parsed : 85;
 }

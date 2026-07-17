@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildInvoiceDraft, normaliseInvoicePolish } from "@/lib/agent/draftInvoice";
+import { buildInvoiceDraft, normaliseInvoicePolish, parseHourlyRate } from "@/lib/agent/draftInvoice";
 
 describe("buildInvoiceDraft", () => {
   it("creates deterministic one-hour line items and totals in pence", () => {
@@ -33,5 +33,15 @@ describe("buildInvoiceDraft", () => {
 
   it("rejects hourly rates below one penny instead of rounding them to zero", () => {
     expect(() => buildInvoiceDraft([], 0.001)).toThrow("Enter an hourly rate between £0.01 and £10,000.");
+  });
+
+  it("rejects rates with fractions of a penny instead of rounding the total", () => {
+    expect(() => buildInvoiceDraft([], 85.999)).toThrow("Enter an hourly rate in whole pennies.");
+  });
+
+  it("only accepts URL rates that can be represented as whole pennies", () => {
+    expect(parseHourlyRate("85.50")).toEqual({ rate: 85.5, valid: true });
+    expect(parseHourlyRate("85.999")).toEqual({ rate: 85, valid: false });
+    expect(parseHourlyRate("1e2")).toEqual({ rate: 85, valid: false });
   });
 });

@@ -22,6 +22,27 @@ export type InvoicePolishResult = {
   summary: string;
 };
 
+export const DEFAULT_HOURLY_RATE = 85;
+
+export type HourlyRateParseResult = {
+  rate: number;
+  valid: boolean;
+};
+
+export function parseHourlyRate(value: string | undefined): HourlyRateParseResult {
+  if (value === undefined) return { rate: DEFAULT_HOURLY_RATE, valid: true };
+
+  const input = value.trim();
+  if (!/^\d{1,5}(?:\.\d{1,2})?$/.test(input)) {
+    return { rate: DEFAULT_HOURLY_RATE, valid: false };
+  }
+
+  const rate = Number(input);
+  return Number.isFinite(rate) && rate >= 0.01 && rate <= 10_000
+    ? { rate, valid: true }
+    : { rate: DEFAULT_HOURLY_RATE, valid: false };
+}
+
 export function buildInvoiceDraft(tickets: InvoiceTicket[], ratePerHour: number): InvoiceDraft {
   const rate_pence = toPence(ratePerHour);
   const line_items = tickets.map((ticket) => ({
@@ -110,5 +131,9 @@ function toPence(ratePerHour: number): number {
   if (!Number.isFinite(ratePerHour) || ratePerHour < 0.01 || ratePerHour > 10_000) {
     throw new Error("Enter an hourly rate between £0.01 and £10,000.");
   }
-  return Math.round(ratePerHour * 100);
+  const pence = Math.round(ratePerHour * 100);
+  if (Math.abs(ratePerHour - pence / 100) > Number.EPSILON) {
+    throw new Error("Enter an hourly rate in whole pennies.");
+  }
+  return pence;
 }
