@@ -95,13 +95,13 @@ export async function getTicket(id: string) {
   return data;  // Ticket-with-stream object, or null when no row matched
 }
 
-export async function listClosedTicketsForStream(streamId: string): Promise<Ticket[]> {
+export async function listCompletedTicketsForStream(streamId: string): Promise<Ticket[]> {
   const supabase = createServerSupabase();
   const { data, error } = await supabase
     .from("tickets")
     .select("*")
     .eq("stream_id", streamId)
-    .in("status", ["done", "cancelled"])
+    .eq("status", "done")
     .order("closed_at", { ascending: false, nullsFirst: false });
   if (error) throw error;
   return data ?? [];

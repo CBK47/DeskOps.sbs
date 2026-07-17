@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { InvoiceDraftPanel } from "@/components/invoice/InvoiceDraftPanel";
 import { buildInvoiceDraft, parseHourlyRate } from "@/lib/agent/draftInvoice";
 import { getStream } from "@/lib/db/streams";
-import { listClosedTicketsForStream } from "@/lib/db/tickets";
+import { listCompletedTicketsForStream } from "@/lib/db/tickets";
 
 export const runtime = "edge";
 
@@ -17,7 +17,7 @@ export default async function InvoiceDraftPage({ searchParams }: { searchParams:
   if (!stream || stream.life_domain !== "career") notFound();
 
   const rateResult = parseHourlyRate(searchParams.rate);
-  const tickets = await listClosedTicketsForStream(stream.id);
+  const tickets = await listCompletedTicketsForStream(stream.id);
   const draft = buildInvoiceDraft(tickets, rateResult.rate);
 
   return (
