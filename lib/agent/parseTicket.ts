@@ -53,7 +53,7 @@ export async function parseTicketText(text: string, streams: readonly ActiveStre
 
   const { client, model } = getOpenAIClient();
   const streamContext = activeStreams.map((stream) => ({ name: stream.name, life_domain: stream.life_domain }));
-  const currentDate = toIsoDate(now);
+  const currentDate = toLondonIsoDate(now);
   const response = await client.responses.create({
     model,
     store: false,
@@ -120,7 +120,7 @@ function resolveStream(name: string | null, domain: unknown, streams: readonly A
 function normaliseDate(value: unknown, now: Date): string | null {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const parsed = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(parsed.getTime()) || toIsoDate(parsed) !== value) return null;
+  if (Number.isNaN(parsed.getTime()) || toLocalIsoDate(parsed) !== value) return null;
   // The model may reasonably draft past-due work, so do not discard past dates.
   void now;
   return value;
@@ -146,6 +146,18 @@ function normalise(value: string) {
   return value.trim().toLocaleLowerCase("en-GB").replace(/[^a-z0-9]+/g, " ").trim();
 }
 
-function toIsoDate(date: Date) {
+export function toLondonIsoDate(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function toLocalIsoDate(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }

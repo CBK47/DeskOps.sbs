@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normaliseTicketCandidate } from "@/lib/agent/parseTicket";
+import { normaliseTicketCandidate, toLondonIsoDate } from "@/lib/agent/parseTicket";
 
 const streams = [
   { id: "home", name: "Home", life_domain: null, archived: false },
@@ -55,5 +55,11 @@ describe("normaliseTicketCandidate", () => {
       due_date: null,
       stream_id: "admin",
     });
+  });
+});
+
+describe("toLondonIsoDate", () => {
+  it("uses the UK calendar date when an edge runtime is still on the prior UTC day", () => {
+    expect(toLondonIsoDate(new Date("2026-07-17T23:30:00Z"))).toBe("2026-07-18");
   });
 });
