@@ -51,7 +51,13 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
 
       <div className="space-y-1.5">
         <label htmlFor="invoice-summary" className="text-sm font-medium">Summary</label>
-        <Textarea id="invoice-summary" value={summary} onChange={(event) => setSummary(event.target.value)} rows={2} />
+        <Textarea
+          id="invoice-summary"
+          value={summary}
+          onChange={(event) => setSummary(event.target.value)}
+          rows={2}
+          disabled={polishing}
+        />
       </div>
 
       {draft.line_items.length === 0 ? (
@@ -70,7 +76,15 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
             <tbody>
               {draft.line_items.map((item) => (
                 <tr key={item.ticket_id} className="border-b border-border/70 align-top">
-                  <td className="py-3 pr-4"><Textarea value={descriptions[item.ticket_id] ?? item.description} onChange={(event) => setDescriptions((current) => ({ ...current, [item.ticket_id]: event.target.value }))} rows={2} /></td>
+                  <td className="py-3 pr-4">
+                    <Textarea
+                      aria-label="Line item description"
+                      value={descriptions[item.ticket_id] ?? item.description}
+                      onChange={(event) => setDescriptions((current) => ({ ...current, [item.ticket_id]: event.target.value }))}
+                      rows={2}
+                      disabled={polishing}
+                    />
+                  </td>
                   <td className="px-3 py-4 text-right font-mono tabular-nums">{item.quantity}</td>
                   <td className="px-3 py-4 text-right font-mono tabular-nums">{formatPence(item.rate_pence)}</td>
                   <td className="pl-3 py-4 text-right font-mono tabular-nums">{formatPence(item.subtotal_pence)}</td>
