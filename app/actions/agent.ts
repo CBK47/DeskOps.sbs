@@ -3,6 +3,7 @@
 import { listStreams } from "@/lib/db/streams";
 import { parseTicketText, type TicketDraft } from "@/lib/agent/parseTicket";
 import { polishInvoiceCopy, type InvoiceDraft, type InvoicePolishResult } from "@/lib/agent/draftInvoice";
+import { ticketDraftErrorMessage } from "@/lib/agent/draft-error";
 
 export type TicketDraftResult = { ok: true; draft: TicketDraft } | { ok: false; error: string };
 
@@ -11,10 +12,7 @@ export async function draftTicketAction(text: string): Promise<TicketDraftResult
     const draft = await parseTicketText(text, await listStreams());
     return { ok: true, draft };
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith("AI drafting is not configured")) {
-      return { ok: false, error: "AI drafting is not configured for this deployment yet." };
-    }
-    return { ok: false, error: "DeskOps could not draft a ticket. Please check the details and try again." };
+    return { ok: false, error: ticketDraftErrorMessage(error) };
   }
 }
 
