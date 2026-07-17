@@ -15,11 +15,17 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
 
   function polishCopy() {
     startPolishTransition(async () => {
-      const result = await polishInvoiceAction({
-        ...draft,
-        summary,
-        line_items: draft.line_items.map((item) => ({ ...item, description: descriptions[item.ticket_id] ?? item.description })),
-      });
+      let result: Awaited<ReturnType<typeof polishInvoiceAction>>;
+      try {
+        result = await polishInvoiceAction({
+          ...draft,
+          summary,
+          line_items: draft.line_items.map((item) => ({ ...item, description: descriptions[item.ticket_id] ?? item.description })),
+        });
+      } catch {
+        toast.error("DeskOps could not polish this invoice draft. You can still review it manually.");
+        return;
+      }
       if (!result.ok) {
         toast.error(result.error);
         return;
