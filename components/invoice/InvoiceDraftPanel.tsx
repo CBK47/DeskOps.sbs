@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Sparkles } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -61,7 +61,11 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
       </div>
 
       {draft.line_items.length === 0 ? (
-        <p className="rounded-md bg-secondary px-3 py-4 text-sm text-muted-foreground">No closed Career tickets are available for this draft yet.</p>
+        <div className="rounded-lg border bg-secondary/40 p-4 text-center">
+          <FileText className="mx-auto h-5 w-5 text-muted-foreground" aria-hidden />
+          <p className="mt-2 text-sm font-medium">No completed Career tickets yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">Complete a Career ticket to include it in this review-only invoice draft.</p>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[34rem] text-sm">
