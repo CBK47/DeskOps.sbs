@@ -107,7 +107,7 @@ export function normaliseInvoicePolish(value: unknown, draft: InvoiceDraft): Inv
 }
 
 function toPence(ratePerHour: number): number {
-  if (!Number.isFinite(ratePerHour) || ratePerHour <= 0 || ratePerHour > 10_000) {
+  if (!Number.isFinite(ratePerHour) || ratePerHour < 0.01 || ratePerHour > 10_000) {
     throw new Error("Enter an hourly rate between £0.01 and £10,000.");
   }
   return Math.round(ratePerHour * 100);

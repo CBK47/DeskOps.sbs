@@ -30,4 +30,8 @@ describe("buildInvoiceDraft", () => {
     });
     expect(draft.total_pence).toBe(9_000);
   });
+
+  it("rejects hourly rates below one penny instead of rounding them to zero", () => {
+    expect(() => buildInvoiceDraft([], 0.001)).toThrow("Enter an hourly rate between £0.01 and £10,000.");
+  });
 });

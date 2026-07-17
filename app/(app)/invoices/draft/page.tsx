@@ -43,5 +43,5 @@ export default async function InvoiceDraftPage({ searchParams }: { searchParams:
 
 function parseRate(value: string | undefined) {
   const parsed = Number(value ?? "85");
-  return Number.isFinite(parsed) && parsed > 0 && parsed <= 10_000 ? parsed : 85;
+  return Number.isFinite(parsed) && parsed >= 0.01 && parsed <= 10_000 ? parsed : 85;
 }
