@@ -10,7 +10,7 @@ test("public landing page explains the human approval boundary", async ({ page }
 test("protected queue sends an unauthenticated user to the redesigned login", async ({ page }) => {
   await page.goto("/queue");
   await expect(page).toHaveURL(/\/login\?next=%2Fqueue$/);
-  await expect(page.getByRole("heading", { name: /put life admin in its place/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /welcome to deskops/i })).toBeVisible();
 });
 
 test("marketing content remains available without JavaScript", async ({ browser }) => {
