@@ -12,9 +12,11 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
   const [summary, setSummary] = useState(draft.summary);
   const [descriptions, setDescriptions] = useState(() => Object.fromEntries(draft.line_items.map((item) => [item.ticket_id, item.description])));
   const [polishing, startPolishTransition] = useTransition();
+  const [polishError, setPolishError] = useState("");
 
   function polishCopy() {
     startPolishTransition(async () => {
+      setPolishError("");
       let result: Awaited<ReturnType<typeof polishInvoiceAction>>;
       try {
         result = await polishInvoiceAction({
@@ -23,11 +25,15 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
           line_items: draft.line_items.map((item) => ({ ...item, description: descriptions[item.ticket_id] ?? item.description })),
         });
       } catch {
-        toast.error("DeskOps could not polish this invoice draft. You can still review it manually.");
+        setPolishError("Busy moment — try again shortly.");
         return;
       }
       if (!result.ok) {
-        toast.error(result.error);
+        if (result.code === "rate_limited" || result.code === "temporarily_unavailable") {
+          setPolishError(result.error);
+        } else {
+          toast.error(result.error);
+        }
         return;
       }
       setSummary(result.polish.summary);
@@ -48,6 +54,7 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
           {polishing ? "Polishing…" : "Polish copy with AI"}
         </Button>
       </div>
+      {polishError && <p className="text-sm text-muted-foreground" role="alert">{polishError}</p>}
 
       <div className="space-y-1.5">
         <label htmlFor="invoice-summary" className="text-sm font-medium">Summary</label>

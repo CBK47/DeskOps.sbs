@@ -30,6 +30,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [recurrence, setRecurrence] = useState("none");
   const [notes, setNotes] = useState("");
   const [draftedByAi, setDraftedByAi] = useState(false);
+  const [aiDraftError, setAiDraftError] = useState("");
   const [reviewedAiDraft, setReviewedAiDraft] = useState(false);
   const [draftSourceText, setDraftSourceText] = useState("");
 
@@ -46,6 +47,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     setRecurrence("none");
     setNotes("");
     setDraftedByAi(false);
+    setAiDraftError("");
     setReviewedAiDraft(false);
     setDraftSourceText("");
   }
@@ -72,15 +74,20 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       return;
     }
     startDraftTransition(async () => {
+      setAiDraftError("");
       let result: Awaited<ReturnType<typeof draftTicketAction>>;
       try {
         result = await draftTicketAction(naturalLanguage);
       } catch {
-        toast.error("DeskOps could not draft a ticket. Please try again.");
+        setAiDraftError("Busy moment — try again shortly.");
         return;
       }
       if (!result.ok) {
-        toast.error(result.error);
+        if (result.code === "rate_limited" || result.code === "temporarily_unavailable") {
+          setAiDraftError(result.error);
+        } else {
+          toast.error(result.error);
+        }
         return;
       }
       setTitle(result.draft.title);
@@ -180,6 +187,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               </Button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">DeskOps will pre-fill a draft for you to check before it is added.</p>
+            {aiDraftError && <p className="mt-2 text-xs text-muted-foreground" role="alert">{aiDraftError}</p>}
           </div>
 
           {draftedByAi && (

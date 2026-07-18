@@ -13,6 +13,6 @@ describe("ticketDraftErrorMessage", () => {
     expect(ticketDraftErrorMessage(new Error("AI drafting is not configured. Add OPENAI_API_KEY and OPENAI_MODEL to the server environment.")))
       .toBe("AI drafting is not configured for this deployment yet.");
     expect(ticketDraftErrorMessage(new Error("Responses API timeout: internal detail")))
-      .toBe("DeskOps could not draft a ticket. Please check the details and try again.");
+      .toBe("Busy moment — try again shortly.");
   });
 });

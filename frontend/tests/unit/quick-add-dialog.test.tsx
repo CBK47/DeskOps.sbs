@@ -147,4 +147,20 @@ describe("QuickAddDialog", () => {
     expect(screen.getByText("Any change requires you to confirm your review again.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Confirm and add ticket" })).toBeDisabled();
   });
+
+  it("renders a calm inline retry message when the AI service is busy", async () => {
+    draftTicketAction.mockResolvedValueOnce({
+      ok: false,
+      code: "rate_limited",
+      error: "Busy moment — try again shortly.",
+    });
+
+    render(<QuickAddDialog streams={[{ id: "stream-home", name: "Home" }]} />);
+
+    fireEvent.change(screen.getByLabelText("Describe it naturally"), { target: { value: "renew the van insurance" } });
+    fireEvent.click(screen.getByRole("button", { name: "Draft" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment — try again shortly.");
+    expect(toastError).not.toHaveBeenCalled();
+  });
 });
