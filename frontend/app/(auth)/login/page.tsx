@@ -4,13 +4,13 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Check, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 
 const LOGIN_PRINCIPLES = [
-  "One reviewable queue",
-  "Wellness stays optional",
-  "AI waits for your approval",
+  "Private by default",
+  "AI stays draft-only",
+  "You approve every action",
 ];
 
 export default function LoginPage() {
@@ -41,33 +41,32 @@ export default function LoginPage() {
 
   return (
     <main className="login-page">
-      <div className="login-grid" aria-hidden />
       <header className="login-masthead">
-        <Link href="/" className="brand-lockup rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="DeskOps home">
+        <Link href="/" className="brand-lockup login-brand-lockup rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70" aria-label="DeskOps home">
           <span className="brand-mark" aria-hidden>DO</span>
           <span>DeskOps</span>
         </Link>
         <div className="flex items-center gap-2">
-          <span className="hidden font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:block">Private workspace</span>
-          <ThemeToggle />
+          <span className="login-utility-label hidden font-mono text-[10px] font-medium uppercase tracking-[0.14em] sm:block">Private studio</span>
+          <span className="login-theme-control"><ThemeToggle /></span>
         </div>
       </header>
 
       <section className="login-panel animate-hero-in motion-reduce:animate-none" aria-labelledby="login-title">
         <div className="login-action-card">
           <div className="login-card-topline">
-            <span className="flex items-center gap-2"><span className="status-light" aria-hidden /> Personal operations</span>
-            <span>REVIEW / DECIDE</span>
+            <span className="flex items-center gap-2"><span className="status-light" aria-hidden /> DeskOps studio</span>
+            <span>Private access</span>
           </div>
 
-          <div className="px-6 pb-6 pt-8 text-center sm:px-9 sm:pb-9 sm:pt-10">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary shadow-[0_12px_35px_rgba(58,91,199,0.16)]">
+          <div className="px-6 pb-7 pt-9 text-center sm:px-10 sm:pb-10 sm:pt-11">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
               <LockKeyhole className="h-5 w-5" aria-hidden />
             </span>
-            <p className="signal-label mt-6">Welcome back</p>
+            <p className="signal-label mt-6">Your private workspace</p>
             <h1 id="login-title" className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Welcome to DeskOps</h1>
             <p className="mx-auto mt-4 max-w-sm text-pretty text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-              One calm place to turn everything life asks you to carry into clear, reviewable next steps.
+              Step back into one calm place for clear decisions, reviewable work and everything you are carrying.
             </p>
 
             {authError && (
@@ -79,7 +78,7 @@ export default function LoginPage() {
             <Button
               type="button"
               size="lg"
-              className="mt-7 h-11 w-full shadow-[0_12px_30px_rgba(58,91,199,0.2)]"
+              className="mt-7 h-12 w-full shadow-[0_12px_30px_rgba(58,91,199,0.2)]"
               disabled={pending}
               onClick={onGoogleClick}
               aria-describedby="login-agency-note"
@@ -90,17 +89,14 @@ export default function LoginPage() {
             <p id="login-agency-note" className="mt-4 text-xs leading-5 text-muted-foreground">
               Google is used only to confirm your identity. DeskOps does not request access to Gmail, Calendar or Drive.
             </p>
-
-            <ul className="login-principles" aria-label="DeskOps principles">
-              {LOGIN_PRINCIPLES.map((item, index) => (
-                <li key={item}>
-                  <span className="font-mono text-[10px] tabular-nums text-primary">0{index + 1}</span>
-                  <span className="flex min-w-0 items-center gap-2"><Check className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />{item}</span>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
+
+        <ul className="login-principles" aria-label="DeskOps principles">
+          {LOGIN_PRINCIPLES.map((item) => (
+            <li key={item}><span className="status-light" aria-hidden />{item}</li>
+          ))}
+        </ul>
       </section>
 
       <footer className="login-footer">

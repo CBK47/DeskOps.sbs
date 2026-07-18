@@ -212,8 +212,7 @@
     @apply relative overflow-hidden;
   }
 
-  .hero-grid,
-  .login-grid {
+  .hero-grid {
     @apply pointer-events-none absolute inset-0;
     background-image:
       linear-gradient(hsl(var(--border) / 0.32) 1px, transparent 1px),
@@ -366,20 +365,52 @@
 
   .login-page {
     @apply relative grid min-h-dvh place-items-center overflow-hidden px-5 py-24 sm:px-8;
-    background-image: radial-gradient(circle at 50% 42%, hsl(var(--primary) / 0.09), transparent 30%);
+    background-color: #071020;
+    background-image:
+      linear-gradient(180deg, rgb(3 9 20 / 0.12), rgb(3 9 20 / 0.38)),
+      url("/login-studio-background.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .login-panel {
-    @apply relative z-10 mx-auto w-full max-w-md;
+    @apply relative z-10 mx-auto w-full max-w-[27rem];
   }
 
   .login-action-card {
-    @apply overflow-hidden rounded-2xl border border-border bg-[var(--surface-raised)];
-    box-shadow: var(--shadow-raised);
+    @apply overflow-hidden rounded-2xl border border-border bg-card text-foreground;
+    box-shadow: 0 28px 80px rgb(0 0 0 / 0.38), inset 0 1px 0 hsl(var(--foreground) / 0.04);
   }
 
   .login-masthead {
     @apply absolute inset-x-5 top-5 z-20 flex items-center justify-between sm:inset-x-8 sm:top-8;
+  }
+
+  .login-brand-lockup {
+    color: rgb(248 250 252);
+    text-shadow: 0 1px 18px rgb(0 0 0 / 0.45);
+  }
+
+  .login-brand-lockup .brand-mark {
+    border-color: rgb(255 255 255 / 0.28);
+    background: rgb(255 255 255 / 0.09);
+    color: rgb(248 250 252);
+  }
+
+  .login-utility-label {
+    color: rgb(226 232 240 / 0.72);
+  }
+
+  .login-theme-control button {
+    border: 1px solid rgb(255 255 255 / 0.16);
+    background: rgb(3 9 20 / 0.42);
+    color: rgb(248 250 252 / 0.82);
+  }
+
+  .login-theme-control button:hover {
+    background: rgb(255 255 255 / 0.12);
+    color: rgb(255 255 255);
   }
 
   .login-card-topline {
@@ -387,15 +418,28 @@
   }
 
   .login-principles {
-    @apply mt-7 divide-y divide-border/70 border-y border-border/70 text-left text-xs;
+    @apply mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-3 text-center text-[11px];
+    color: rgb(226 232 240 / 0.76);
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.55);
   }
 
   .login-principles li {
-    @apply grid grid-cols-[1.5rem_1fr] items-center gap-3 py-3 text-muted-foreground;
+    @apply flex items-center gap-2;
+  }
+
+  .login-principles .status-light {
+    @apply h-1.5 w-1.5;
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.8);
   }
 
   .login-footer {
-    @apply absolute inset-x-5 bottom-5 z-20 flex items-center justify-between gap-4 text-[11px] text-muted-foreground sm:inset-x-8 sm:bottom-8;
+    @apply absolute inset-x-5 bottom-5 z-20 flex items-center justify-between gap-4 text-[11px] sm:inset-x-8 sm:bottom-8;
+    color: rgb(226 232 240 / 0.68);
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.5);
+  }
+
+  .login-footer a:hover {
+    color: rgb(255 255 255);
   }
 
   .mobile-nav {
