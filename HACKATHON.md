@@ -33,7 +33,7 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 ## Technology
 
 - OpenAI Responses API with `OPENAI_MODEL=gpt-5.6`
-- Next.js 14, React 18, TypeScript, and Tailwind CSS
+- Next.js 15, React 18, TypeScript, and Tailwind CSS
 - Supabase Auth, Postgres, and row-level security
 - Cloudflare Workers through OpenNext
 - Vitest and Playwright

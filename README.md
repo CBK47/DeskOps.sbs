@@ -23,7 +23,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 
 ## Stack
 
-- Next.js 14, React 18, TypeScript, Tailwind CSS, and shadcn/ui
+- Next.js 15, React 18, TypeScript, Tailwind CSS, and Base UI/shadcn components
 - Supabase for Postgres, authentication, and row-level security
 - Cloudflare Workers through OpenNext for deployment
 - Vitest and Playwright for testing
