@@ -50,6 +50,7 @@ describe("RebalanceCard", () => {
 
     await screen.findByText("Take a ten-minute walk");
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect(screen.getByLabelText("Title")).toHaveFocus();
     fireEvent.change(screen.getByLabelText("Title"), { target: { value: "Walk around the block" } });
     fireEvent.click(screen.getByRole("button", { name: "Add ticket" }));
 
@@ -69,5 +70,28 @@ describe("RebalanceCard", () => {
     expect(screen.queryByText("One thing to rebalance")).not.toBeInTheDocument();
     expect(window.sessionStorage.getItem("deskops:rebalance:assessment-dismiss")).toBe("dismissed");
     expect(mocks.createTicketSafe).not.toHaveBeenCalled();
+  });
+
+  it("offers a working retry after a calm transient failure", async () => {
+    mocks.draftRebalanceAction
+      .mockResolvedValueOnce({ ok: false, code: "temporarily_unavailable", error: "Busy moment — try again shortly." })
+      .mockResolvedValueOnce({
+        ok: true,
+        dimension: "physical",
+        draft: {
+          title: "Take a ten-minute walk",
+          notes: "Choose a comfortable route.",
+          stream_id: stream.id,
+          suggested_stream_name: stream.name,
+        },
+      });
+
+    render(<RebalanceCard assessmentId="assessment-retry" selection={selection} streams={[stream]} />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment — try again shortly.");
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+
+    expect(await screen.findByText("Take a ten-minute walk")).toBeInTheDocument();
+    expect(mocks.draftRebalanceAction).toHaveBeenCalledTimes(2);
   });
 });

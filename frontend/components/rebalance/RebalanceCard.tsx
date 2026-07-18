@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { draftRebalanceAction } from "@/app/actions/agent";
@@ -35,8 +35,29 @@ export function RebalanceCard({
   const [adding, startAddTransition] = useTransition();
   const storageKey = `deskops:rebalance:${assessmentId}`;
 
+  const loadDraft = useCallback((fresh = false) => {
+    if (fresh) rebalanceDraftRequests.delete(assessmentId);
+    setError("");
+    setLoading(true);
+
+    void requestRebalanceDraft(assessmentId)
+      .then((result) => {
+        if (!result.ok) {
+          rebalanceDraftRequests.delete(assessmentId);
+          setError(result.error);
+          return;
+        }
+        setDraft(result.draft);
+        writeSessionValue(storageKey, JSON.stringify(result.draft));
+      })
+      .catch(() => {
+        rebalanceDraftRequests.delete(assessmentId);
+        setError("Busy moment — try again shortly.");
+      })
+      .finally(() => setLoading(false));
+  }, [assessmentId, storageKey]);
+
   useEffect(() => {
-    let cancelled = false;
     const stored = readSessionValue(storageKey);
     if (stored === "dismissed") {
       setHidden(true);
@@ -52,29 +73,8 @@ export function RebalanceCard({
     }
 
     setReady(true);
-    setLoading(true);
-
-    void requestRebalanceDraft(assessmentId)
-      .then((result) => {
-        if (cancelled) return;
-        if (!result.ok) {
-          setError(result.error);
-          return;
-        }
-        setDraft(result.draft);
-        writeSessionValue(storageKey, JSON.stringify(result.draft));
-      })
-      .catch(() => {
-        if (!cancelled) setError("Busy moment — try again shortly.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [assessmentId, storageKey, streams]);
+    loadDraft();
+  }, [loadDraft, storageKey, streams]);
 
   if (!ready || hidden) return null;
 
@@ -111,7 +111,7 @@ export function RebalanceCard({
   }
 
   return (
-    <section className="surface-panel border-primary/25 p-5 sm:p-6" aria-labelledby="rebalance-title">
+    <section className="surface-panel border-primary/25 p-5 sm:p-6" aria-labelledby="rebalance-title" aria-busy={loading}>
       <div className="flex items-start gap-4">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
           <Sparkles className="h-4 w-4" aria-hidden />
@@ -124,13 +124,20 @@ export function RebalanceCard({
           {loading && <p className="mt-5 text-sm text-muted-foreground" role="status">Drafting one gentle next step…</p>}
           {error && <p className="mt-5 text-sm text-muted-foreground" role="alert">{error}</p>}
 
+          {!draft && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {error && <Button type="button" variant="secondary" onClick={() => loadDraft(true)} disabled={loading}>Try again</Button>}
+              <Button type="button" variant="ghost" onClick={dismiss}>Not now</Button>
+            </div>
+          )}
+
           {draft && (
             <div className="mt-5 border-t border-border/70 pt-5">
               {editing ? (
                 <div className="grid gap-4">
                   <label className="space-y-1.5 text-sm font-medium">
                     Title
-                    <Input value={draft.title} maxLength={160} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
+                    <Input autoFocus value={draft.title} maxLength={160} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
                   </label>
                   <label className="space-y-1.5 text-sm font-medium">
                     Notes
