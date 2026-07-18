@@ -4,7 +4,7 @@
 
 DeskOps brings the clarity of a service desk to life admin. Capture a task once, assign it to the right stream, prioritise it, and work from one calm, filterable queue instead of a pile of scattered notes, reminders, and messages.
 
-DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It was extended during Build Week with a GPT-5.6 draft agent, a live Wheel of Life, and review-only Career invoice drafts.
+DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It combines a GPT-5.6 draft agent, a private Wellness Wheel, and review-only invoice drafts for Occupational work.
 
 **Project domain:** [deskops.sbs](https://deskops.sbs)
 
@@ -16,9 +16,10 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Recurring tickets that retain their monthly or yearly anchor date
 - Google sign-in, per-user data isolation, and row-level security
 - Installable PWA with light and dark themes
-- Eight life domains and a Wheel of Life derived from queue health
+- A private, skippable Wellness Wheel across eight Dimensions of Wellness
+- Dated assessment history with user-chosen focus and reminder preferences
 - Natural-language ticket drafting with GPT-5.6, always reviewed before saving
-- Review-only Career invoice drafts with deterministic itemised totals
+- Review-only Occupational invoice drafts with deterministic itemised totals
 
 ## Stack
 
@@ -138,8 +139,8 @@ AI never writes tickets, sends invoices, or changes financial totals. It only pr
 The demo focuses on this end-to-end flow:
 
 1. A user types or speaks a messy life-admin brain dump.
-2. An AI assistant identifies tasks, deadlines, priorities, and life domains.
-3. DeskOps updates a single queue and a live Wheel of Life to reveal imbalance.
+2. An AI assistant proposes tasks, deadlines and priorities for review.
+3. The person may separately record a private Wellness Wheel snapshot and choose their own focus.
 4. Work items can be associated with a client and converted into a reviewable invoice draft.
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.

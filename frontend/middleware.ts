@@ -27,15 +27,18 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/auth");
+  const isPublicRoute = pathname === "/" || pathname.startsWith("/login") || pathname.startsWith("/auth") || pathname.startsWith("/privacy") || pathname.startsWith("/terms");
 
-  if (!user && !isAuthRoute) {
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.search = "";
+    url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(url);
   }
   if (user && isAuthRoute && pathname !== "/auth/callback") {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/queue";
     return NextResponse.redirect(url);
   }
   return response;

@@ -17,13 +17,13 @@ export function TicketForm({
   submitLabel?: string;
 }) {
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="surface-panel space-y-5 p-5 sm:p-7">
       <div className="space-y-1.5">
         <Label htmlFor="title">Title</Label>
         <Input id="title" name="title" required defaultValue={ticket?.title} autoFocus />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Stream</Label>
           <StreamPicker defaultValue={ticket?.stream_id} />
@@ -42,7 +42,7 @@ export function TicketForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="due_date">Due date</Label>
           <Input id="due_date" name="due_date" type="date" defaultValue={ticket?.due_date ?? ""} />
@@ -67,8 +67,8 @@ export function TicketForm({
         <Textarea id="notes" name="notes" rows={4} defaultValue={ticket?.notes ?? ""} />
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit">{submitLabel}</Button>
+      <div className="flex justify-end border-t border-border/70 pt-5">
+        <Button type="submit" size="lg">{submitLabel}</Button>
       </div>
     </form>
   );

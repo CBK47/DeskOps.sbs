@@ -36,5 +36,5 @@ export async function seedDemoWorkspaceAction() {
   const supabase = await createClient();
   const { error } = await supabase.rpc("seed_demo_tickets");
   if (error) throw error;
-  redirect("/");
+  redirect("/queue");
 }

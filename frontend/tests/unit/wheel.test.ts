@@ -77,7 +77,7 @@ describe("computeWheelScores", () => {
 
 describe("wheelFilterHref", () => {
   it("preserves every mapped stream when filtering a life domain", () => {
-    expect(wheelFilterHref(["home and family", "family-admin"])).toBe("/?stream=home+and+family&stream=family-admin");
+    expect(wheelFilterHref(["home and family", "family-admin"])).toBe("/queue?stream=home+and+family&stream=family-admin");
   });
 
   it("does not offer a filter for an unmapped life domain", () => {

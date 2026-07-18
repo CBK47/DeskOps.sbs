@@ -9,6 +9,7 @@ const toastSuccess = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: routerRefresh }),
+  usePathname: () => "/queue",
 }));
 
 vi.mock("@/app/actions/agent", () => ({
@@ -62,6 +63,14 @@ describe("QuickAddDialog", () => {
         suggested_stream_name: "Home",
       },
     });
+  });
+
+  it("offers a stream setup path instead of an invalid ticket form", () => {
+    render(<QuickAddDialog streams={[]} />);
+
+    expect(screen.getByText("Create a stream first")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Set up a stream" })).toHaveAttribute("href", "/streams");
+    expect(screen.queryByLabelText("Title")).not.toBeInTheDocument();
   });
 
   it("requires a fresh AI draft when the natural-language source changes", async () => {

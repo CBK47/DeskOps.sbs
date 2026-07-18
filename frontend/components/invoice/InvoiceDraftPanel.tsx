@@ -41,7 +41,7 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">Review-only draft</p>
-          <h2 className="mt-1 text-lg font-semibold">Career work invoice</h2>
+          <h2 className="mt-1 text-lg font-semibold">Occupational work invoice</h2>
         </div>
         <Button type="button" variant="secondary" onClick={polishCopy} disabled={polishing || draft.line_items.length === 0}>
           <Sparkles className="mr-2 h-4 w-4" aria-hidden />
@@ -63,8 +63,8 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
       {draft.line_items.length === 0 ? (
         <div className="rounded-lg border bg-secondary/40 p-4 text-center">
           <FileText className="mx-auto h-5 w-5 text-muted-foreground" aria-hidden />
-          <p className="mt-2 text-sm font-medium">No completed Career tickets yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">Complete a Career ticket to include it in this review-only invoice draft.</p>
+          <p className="mt-2 text-sm font-medium">No completed work tickets yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">Complete a ticket in this legacy Career stream to include it in the review-only invoice draft.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">

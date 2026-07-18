@@ -1,6 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { createTicketSafe } from "@/app/actions/tickets";
 import { PRIORITY_ITEMS, RECURRENCE_ITEMS } from "@/lib/ticket-options";
 import { draftTicketAction } from "@/app/actions/agent";
 import { Sparkles } from "lucide-react";
+import Link from "next/link";
 
 type StreamLite = { id: string; name: string };
 
@@ -20,6 +21,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [pending, startSubmitTransition] = useTransition();
   const [drafting, startDraftTransition] = useTransition();
   const router = useRouter();
+  const pathname = usePathname();
   const [naturalLanguage, setNaturalLanguage] = useState("");
   const [title, setTitle] = useState("");
   const [streamId, setStreamId] = useState(streams[0]?.id ?? "");
@@ -134,19 +136,30 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     });
   }
 
+  if (pathname.startsWith("/wellness")) return null;
+
   return (
     <>
       <Button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Add ticket"
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none"
+        className="fixed bottom-24 right-5 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none sm:bottom-6 sm:right-6"
       >
         +
       </Button>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
         <DialogTitle>New ticket</DialogTitle>
+
+        {streams.length === 0 ? (
+          <div className="py-5 text-center">
+            <span className="empty-state-icon mx-auto">+</span>
+            <p className="mt-4 font-semibold">Create a stream first</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Streams give each ticket a clear home. You can keep the structure as simple as you like.</p>
+            <Link href="/streams" className="primary-cta mt-6" onClick={() => setOpen(false)}>Set up a stream</Link>
+          </div>
+        ) : (
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="rounded-lg border bg-secondary/40 p-3">
@@ -205,7 +218,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Stream</Label>
               <Select
@@ -248,7 +261,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="due_date">Due date</Label>
               <Input
@@ -305,6 +318,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             </Button>
           </div>
         </form>
+        )}
       </DialogContent>
       </Dialog>
     </>

@@ -6,7 +6,7 @@ Apps for Your Life
 
 ## One-liner
 
-DeskOps turns life admin into one intelligent queue, then makes imbalance visible through a live Wheel of Life.
+DeskOps turns life admin into one intelligent queue, then offers a private Wellness Wheel for reflection without taking the decisions away.
 
 ## What was built during Build Week
 
@@ -25,10 +25,10 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 ### Demo flow
 
 1. Sign in and set up the generic demo workspace from **Streams**.
-2. The unified queue and Wheel of Life show the health of each life domain.
+2. The unified queue holds the work, while the optional Wellness Wheel keeps reflection separate from workload.
 3. Enter a task naturally, for example: `renew the van insurance next Friday, high priority`.
 4. GPT-5.6 returns a structured ticket draft. The user checks and confirms it before it is saved.
-5. Open the Career stream, choose **Draft invoice**, set an hourly rate, and review the deterministic line items. GPT-5.6 may polish copy, but never changes the figures.
+5. Open an eligible work stream, choose **Draft Occupational invoice**, set an hourly rate, and review the deterministic line items. GPT-5.6 may polish copy, but never changes the figures.
 
 ## Technology
 
@@ -48,7 +48,6 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 ## Scope deliberately parked
 
 - Chore automation and home-assistant integrations
-- Wheel self-assessment questionnaire
 - PDF invoices or persisted invoices
 - Digest emails
 - Shared household/client workspaces and multi-user permissions

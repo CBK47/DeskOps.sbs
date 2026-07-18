@@ -19,8 +19,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeskOps",
-  description: "Personal ITSM + LifeOps",
+  metadataBase: new URL("https://deskops.sbs"),
+  title: {
+    default: "DeskOps — one calm queue for real life",
+    template: "%s · DeskOps",
+  },
+  description: "A private life-operations desk with one reviewable queue and an optional Wellness Wheel.",
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "DeskOps" },
   icons: { apple: "/apple-touch-icon.png" },
@@ -37,7 +41,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
+    <html lang="en-GB" className="h-full" suppressHydrationWarning>
       <body
         className={`${manrope.variable} ${jetbrainsMono.variable} font-sans antialiased h-full bg-background text-foreground`}
       >

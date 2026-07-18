@@ -6,6 +6,7 @@ import { QuickAddDialog } from "@/components/ticket/QuickAddDialog";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { NavLink } from "@/components/app/NavLink";
 import { listStreams } from "@/lib/db/streams";
+import { CircleUserRound, ListTodo, Radar, Rows3, Workflow } from "lucide-react";
 
 async function signOut() {
   "use server";
@@ -25,30 +26,40 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     .map((s) => ({ id: s.id, name: s.name }));
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
+    <div className="flex min-h-dvh flex-col">
+      <a href="#app-main" className="skip-link">Skip to main content</a>
+      <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link
-            href="/"
-            className="rounded-md text-lg font-semibold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            href="/queue"
+            className="brand-lockup rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Desk<span className="text-cbk-blue dark:text-cbk-blue-hover">Ops</span>
+            <span className="brand-mark" aria-hidden>DO</span>
+            <span>DeskOps</span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <NavLink href="/">Queue</NavLink>
-            <NavLink href="/streams">Streams</NavLink>
-            <span className="mx-1 hidden h-4 w-px bg-border sm:block" aria-hidden />
-            <span className="hidden font-mono text-[11px] text-muted-foreground sm:block" title={user?.email ?? undefined}>
+          <nav className="hidden items-center gap-1 text-sm md:flex" aria-label="Main navigation">
+            <NavLink href="/queue"><ListTodo className="h-4 w-4" aria-hidden /> Queue</NavLink>
+            <NavLink href="/wellness"><Radar className="h-4 w-4" aria-hidden /> Wellness</NavLink>
+            <NavLink href="/streams"><Rows3 className="h-4 w-4" aria-hidden /> Streams</NavLink>
+          </nav>
+          <div className="flex items-center gap-1">
+            <span className="hidden max-w-48 truncate rounded-md border border-border/70 px-2 py-1 font-mono text-[11px] text-muted-foreground lg:block" title={user?.email ?? undefined}>
               {user?.email}
             </span>
             <ThemeToggle />
             <form action={signOut}>
-              <Button type="submit" variant="ghost" size="sm">Sign out</Button>
+              <Button type="submit" variant="ghost" size="sm" className="hidden sm:inline-flex">Sign out</Button>
+              <Button type="submit" variant="ghost" size="icon-sm" className="sm:hidden" aria-label="Sign out"><CircleUserRound className="h-4 w-4" /></Button>
             </form>
-          </nav>
+          </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
+      <main id="app-main" className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-7 sm:px-6 sm:pb-10 sm:pt-9">{children}</main>
+      <nav className="mobile-nav md:hidden" aria-label="Mobile navigation">
+        <NavLink href="/queue"><ListTodo className="h-5 w-5" aria-hidden /><span>Queue</span></NavLink>
+        <NavLink href="/wellness"><Radar className="h-5 w-5" aria-hidden /><span>Wellness</span></NavLink>
+        <NavLink href="/streams"><Workflow className="h-5 w-5" aria-hidden /><span>Streams</span></NavLink>
+      </nav>
       <QuickAddDialog streams={streamsLite} />
     </div>
   );

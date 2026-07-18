@@ -94,5 +94,5 @@ export async function closeTicketAction(id: string) {
 
 export async function deleteTicketAction(id: string) {
   await deleteTicket(id);
-  redirect("/");
+  redirect("/queue");
 }

@@ -17,7 +17,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
         </p>
         <div className="flex justify-center gap-2">
           <Button type="button" onClick={reset}>Try again</Button>
-          <Link href="/">
+          <Link href="/queue">
             <Button type="button" variant="outline">Back to queue</Button>
           </Link>
         </div>
