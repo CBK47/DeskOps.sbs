@@ -27,7 +27,7 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 1. Sign in and set up the generic demo workspace from **Streams**.
 2. The unified queue holds the work, while the optional Wellness Wheel keeps reflection separate from workload.
 3. Enter a task naturally, for example: `renew the van insurance next Friday, high priority`.
-4. GPT-5.6 returns a structured ticket draft. The user checks and confirms it before it is saved.
+4. GPT-5.6 returns a structured ticket draft. The user may edit it, then chooses **Add ticket** once to save it.
 
 ## Technology
 
@@ -40,7 +40,7 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 ## Human approval boundaries
 
 - AI proposes ticket fields. The user submits the existing form to write a ticket.
-- Editing an AI-filled field clears approval. Editing the original description requires a fresh draft and another review.
+- AI-filled fields remain editable. The person chooses **Add ticket** once to save the finished draft.
 
 ## Scope deliberately parked
 

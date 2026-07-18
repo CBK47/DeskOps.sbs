@@ -45,7 +45,7 @@ Positioning: **"Every productivity app makes you busier. DeskOps is the first th
 
 - **0:00–0:20 Hook.** On the Wheel (visibly imbalanced): "Every productivity app makes you busier. DeskOps is the first that tells you when to stop." One screen, your whole life.
 - **0:20–0:50 The queue.** Life admin as one intelligent queue; streams = life domains.
-- **0:50–1:30 NL agent.** Type `renew the van insurance next Friday, high priority` → GPT-5.6 drafts the ticket → you review → confirm. Stress the human-in-the-loop.
+- **0:50–1:30 NL agent.** Type `renew the van insurance next Friday, high priority` → GPT-5.6 drafts the ticket → you edit if useful → choose **Add ticket** once. Stress the human-in-the-loop.
 - **1:30–2:15 ⭐ Rebalance.** "It doesn't just show your life — it notices." Click Rebalance → "Health is slipping, nothing closed in 3 weeks — here's a 20-minute walk to restart." → approve → Wheel updates live.
 - **2:15–2:40 Invoice.** Close two Career tickets → Draft invoice → deterministic line items, GPT-5.6 polishes copy only. "It even bills for the work."
 - **2:40–3:00 Close.** "Built solo in a week with Codex and GPT-5.6." Impact line + `deskops.sbs`.

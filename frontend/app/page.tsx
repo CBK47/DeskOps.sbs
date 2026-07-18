@@ -129,7 +129,7 @@ export default function LandingPage() {
               </div>
               <ul className="trust-list">
                 {[
-                  "AI ticket suggestions stay drafts until you review them.",
+                  "AI ticket suggestions stay editable until you choose Add ticket.",
                   "Wellness ratings are optional and never set priorities automatically.",
                   "Every suggested field remains editable before anything is saved.",
                   "Companion tools are ordinary links; no assessment data is shared.",

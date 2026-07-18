@@ -31,12 +31,6 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [notes, setNotes] = useState("");
   const [draftedByAi, setDraftedByAi] = useState(false);
   const [aiDraftError, setAiDraftError] = useState("");
-  const [reviewedAiDraft, setReviewedAiDraft] = useState(false);
-  const [draftSourceText, setDraftSourceText] = useState("");
-
-  const trimmedNaturalLanguage = naturalLanguage.trim();
-  const aiDraftNeedsRefresh = draftedByAi && trimmedNaturalLanguage !== draftSourceText;
-  const aiReviewMessage = getAiReviewMessage(aiDraftNeedsRefresh, reviewedAiDraft);
 
   function resetForm() {
     setNaturalLanguage("");
@@ -48,24 +42,11 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     setNotes("");
     setDraftedByAi(false);
     setAiDraftError("");
-    setReviewedAiDraft(false);
-    setDraftSourceText("");
   }
 
   function onOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) resetForm();
-  }
-
-  function requireFreshAiReview() {
-    if (draftedByAi) setReviewedAiDraft(false);
-  }
-
-  function onNaturalLanguageChange(value: string) {
-    setNaturalLanguage(value);
-    if (draftedByAi && value.trim() !== draftSourceText) {
-      setReviewedAiDraft(false);
-    }
   }
 
   function handleNaturalLanguageDraft() {
@@ -97,9 +78,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       setRecurrence(result.draft.recurrence);
       setNotes(result.draft.notes);
       setDraftedByAi(true);
-      setReviewedAiDraft(false);
-      setDraftSourceText(trimmedNaturalLanguage);
-      toast.success("Ticket draft ready to review");
+      toast.success("Drafted for you — edit or add");
     });
   }
 
@@ -109,14 +88,6 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   // insert partially succeeded before an error.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (aiDraftNeedsRefresh) {
-      toast.error("Redraft the AI ticket after changing the description.");
-      return;
-    }
-    if (draftedByAi && !reviewedAiDraft) {
-      toast.error("Review and confirm the AI draft before adding the ticket.");
-      return;
-    }
     const formData = new FormData(e.currentTarget);
     startSubmitTransition(async () => {
       // A stale Server Action reference (e.g. this tab loaded before a
@@ -178,7 +149,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Input
                 id="natural-language"
                 value={naturalLanguage}
-                onChange={(event) => onNaturalLanguageChange(event.target.value)}
+                onChange={(event) => setNaturalLanguage(event.target.value)}
                 maxLength={1200}
                 placeholder="e.g. renew the van insurance next Friday"
               />
@@ -192,22 +163,8 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
           {draftedByAi && (
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-3" role="status">
-              <p className="text-sm font-medium">AI draft ready for your review</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">Check every field before confirming. AI cannot add this ticket for you.</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground" aria-live="polite">
-                {aiReviewMessage}
-              </p>
-              <label htmlFor="review-ai-draft" className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
-                <input
-                  id="review-ai-draft"
-                  type="checkbox"
-                  checked={reviewedAiDraft}
-                  onChange={(event) => setReviewedAiDraft(event.target.checked)}
-                  disabled={aiDraftNeedsRefresh}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-                <span>I have reviewed this AI draft.</span>
-              </label>
+              <p className="text-sm font-medium">I&apos;ve drafted this — you decide.</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">Drafted for you — edit or add.</p>
             </div>
           )}
 
@@ -218,10 +175,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               name="title"
               value={title}
               maxLength={160}
-              onChange={(event) => {
-                requireFreshAiReview();
-                setTitle(event.target.value);
-              }}
+              onChange={(event) => setTitle(event.target.value)}
               required
               autoFocus
             />
@@ -234,10 +188,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 name="stream_id"
                 required
                 value={streamId}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setStreamId(value ?? "");
-                }}
+                onValueChange={(value) => setStreamId(value ?? "")}
                 items={streams.map((s) => ({ value: s.id, label: s.name }))}
               >
                 <SelectTrigger id="quick-stream" className="w-full"><SelectValue placeholder="Pick a stream" /></SelectTrigger>
@@ -253,10 +204,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Select
                 name="priority"
                 value={priority}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setPriority(value ?? "medium");
-                }}
+                onValueChange={(value) => setPriority(value ?? "medium")}
                 items={PRIORITY_ITEMS}
               >
                 <SelectTrigger id="priority" className="w-full"><SelectValue /></SelectTrigger>
@@ -278,10 +226,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 name="due_date"
                 type="date"
                 value={dueDate}
-                onChange={(event) => {
-                  requireFreshAiReview();
-                  setDueDate(event.target.value);
-                }}
+                onChange={(event) => setDueDate(event.target.value)}
               />
             </div>
             <div className="space-y-1.5">
@@ -289,10 +234,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Select
                 name="recurrence"
                 value={recurrence}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setRecurrence(value ?? "none");
-                }}
+                onValueChange={(value) => setRecurrence(value ?? "none")}
                 items={RECURRENCE_ITEMS}
               >
                 <SelectTrigger id="recurrence" className="w-full"><SelectValue /></SelectTrigger>
@@ -315,16 +257,13 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               rows={4}
               maxLength={1200}
               value={notes}
-              onChange={(event) => {
-                requireFreshAiReview();
-                setNotes(event.target.value);
-              }}
+              onChange={(event) => setNotes(event.target.value)}
             />
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={pending || aiDraftNeedsRefresh || (draftedByAi && !reviewedAiDraft)}>
-              {pending ? "Adding…" : draftedByAi ? "Confirm and add ticket" : "Add ticket"}
+            <Button type="submit" disabled={pending}>
+              {pending ? "Adding…" : "Add ticket"}
             </Button>
           </div>
         </form>
@@ -333,10 +272,4 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       </Dialog>
     </>
   );
-}
-
-function getAiReviewMessage(needsRefresh: boolean, reviewed: boolean) {
-  if (needsRefresh) return "The description changed after this draft was generated. Redraft before adding the ticket.";
-  if (reviewed) return "Review confirmed for these fields.";
-  return "Any change requires you to confirm your review again.";
 }

@@ -18,7 +18,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Installable PWA with light and dark themes
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
-- Natural-language ticket drafting with GPT-5.6, always reviewed before saving
+- Natural-language ticket drafting with GPT-5.6, always editable and saved only by the user
 
 ## Stack
 

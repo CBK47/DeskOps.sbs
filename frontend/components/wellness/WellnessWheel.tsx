@@ -15,7 +15,12 @@ export function WellnessWheel({ entries, compact = false }: { entries: WellnessW
   const byDimension = new Map(entries.map((entry) => [entry.dimension, entry]));
   const summary = WELLNESS_DIMENSIONS.map((dimension) => {
     const entry = byDimension.get(dimension.id);
-    return `${dimension.label}: ${entry?.current_rating ? `${entry.current_rating} out of 10` : "not rated"}`;
+    const value = entry?.focus_state === "not_tracking"
+      ? "untracked"
+      : entry?.current_rating
+        ? `${entry.current_rating} out of 10`
+        : "not rated";
+    return `${dimension.label}: ${value}`;
   }).join(", ");
 
   return (
@@ -71,7 +76,7 @@ export function WellnessWheel({ entries, compact = false }: { entries: WellnessW
                 dominantBaseline="middle"
                 className="fill-muted-foreground font-mono text-[9px]"
               >
-                {current === null ? "not rated" : `${current}/10`}
+                {current === null ? (entry?.focus_state === "not_tracking" ? "untracked" : "not rated") : `${current}/10`}
               </text>
             </g>
           );
@@ -84,7 +89,7 @@ export function WellnessWheel({ entries, compact = false }: { entries: WellnessW
       <ul className="mt-4 grid gap-x-5 gap-y-2 sm:grid-cols-2" aria-label="Wellness Wheel values">
         {WELLNESS_DIMENSIONS.map((dimension) => {
           const entry = byDimension.get(dimension.id);
-          const value = entry?.focus_state === "not_tracking" || !entry?.current_rating ? "Not tracking" : `${entry.current_rating}/10`;
+          const value = entry?.focus_state === "not_tracking" || !entry?.current_rating ? "Untracked" : `${entry.current_rating}/10`;
           return (
             <li key={dimension.id} className="flex min-h-8 items-center justify-between gap-3 border-t border-border/70 pt-2 text-sm">
               <span>{dimension.label}</span>
