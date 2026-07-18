@@ -27,7 +27,7 @@ The product code is ready for a controlled release process, but it should not be
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
 | Production branch | `main` at `8cd6f8b` |
 | Review branch | `codex/frontend-wellness-redesign` |
-| Functional implementation baseline | `fbff318` (`feat: draft one calm rebalance step`) |
+| Functional implementation baseline | `8adb64e` (`fix: polish rebalance recovery states`) |
 | Review branch pushed | Yes |
 | Review branch merged to `main` | No |
 | Force-push required | No |
@@ -42,7 +42,8 @@ The implementation commits on the review branch are:
 6. `1b87a61` — authenticated and rate-limited AI action boundary;
 7. `bf816ef` — default-off personal-mode invoice tooling;
 8. `f8bc359` — one-decision AI ticket capture;
-9. `fbff318` — deterministic Rebalance selection and one-ticket draft flow.
+9. `fbff318` — deterministic Rebalance selection and one-ticket draft flow;
+10. `8adb64e` — Rebalance retry, dismissal and keyboard-focus polish.
 
 ## What is implemented on the review branch
 
@@ -86,7 +87,7 @@ The current functional implementation passed:
 
 - `npm run typecheck`;
 - `npm run lint`;
-- `npm run test`: 17 files, 77 tests;
+- `npm run test`: 17 files, 78 tests;
 - `npm run test:e2e`: 5 Chromium tests;
 - `npm run worker:build`: successful OpenNext Cloudflare bundle.
 
