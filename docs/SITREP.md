@@ -27,7 +27,7 @@ The product code is ready for a controlled release process, but it should not be
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
 | Production branch | `main` at `8cd6f8b` |
 | Review branch | `codex/frontend-wellness-redesign` |
-| Functional implementation baseline | `53176b9` (`feat: focus the login experience`) |
+| Functional implementation baseline | `6587e10` (`feat: create studio-style login entrance`) |
 | Review branch pushed | Yes |
 | Review branch merged to `main` | No |
 | Force-push required | No |
@@ -37,14 +37,15 @@ The implementation commits on the review branch are:
 1. `566c6db` — private Wellness Wheel assessments;
 2. `c2d81c6` — public and product surface redesign;
 3. `e936fba` — Impeccable polish and hardening;
-4. `53176b9` — focused Confer-inspired login experience.
+4. `53176b9` — focused Confer-inspired login experience;
+5. `6587e10` — studio-style login entrance using the approved orbital artwork.
 
 ## What is implemented on the review branch
 
 ### Public and authentication surfaces
 
 - A real public landing page at `/` instead of an authentication redirect.
-- A focused, responsive `/login` with a centred sign-in card, light/dark themes, privacy cues and the existing Google OAuth flow.
+- A focused, responsive `/login` with a full-bleed studio backdrop, centred sign-in card, light/dark themes, privacy cues and the existing Google OAuth flow.
 - Public privacy, terms and not-found pages.
 - Restrained marketing reveals with a no-JavaScript fallback and reduced-motion support.
 
@@ -85,7 +86,7 @@ The current functional implementation passed:
 
 The Worker build emits a duplicate `options` key warning inside a generated OpenNext dependency bundle. The build completes successfully; no authored DeskOps source contains that duplicate.
 
-Visual QA covered the landing page and login in desktop light, desktop dark and phone widths. Authenticated production data was not used for visual QA because the new production schema has not been applied.
+Visual QA covered the landing page and the final studio-style login in desktop light, desktop dark, authentication-error and phone states. Authenticated production data was not used for visual QA because the new production schema has not been applied.
 
 ## Production reality
 
