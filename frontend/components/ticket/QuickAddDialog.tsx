@@ -144,7 +144,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Add ticket"
-        className="fixed bottom-24 right-5 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none sm:bottom-6 sm:right-6"
+        className="fixed bottom-24 right-5 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-[transform,box-shadow,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none sm:bottom-6 sm:right-6"
       >
         +
       </Button>
@@ -209,6 +209,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               id="title"
               name="title"
               value={title}
+              maxLength={160}
               onChange={(event) => {
                 requireFreshAiReview();
                 setTitle(event.target.value);
@@ -220,7 +221,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Stream</Label>
+              <Label htmlFor="quick-stream">Stream</Label>
               <Select
                 name="stream_id"
                 required
@@ -231,7 +232,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 }}
                 items={streams.map((s) => ({ value: s.id, label: s.name }))}
               >
-                <SelectTrigger><SelectValue placeholder="Pick a stream" /></SelectTrigger>
+                <SelectTrigger id="quick-stream" className="w-full"><SelectValue placeholder="Pick a stream" /></SelectTrigger>
                 <SelectContent>
                   {streams.map((s) => (
                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -250,7 +251,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 }}
                 items={PRIORITY_ITEMS}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="priority" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
@@ -286,7 +287,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 }}
                 items={RECURRENCE_ITEMS}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="recurrence" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="daily">Daily</SelectItem>
@@ -304,6 +305,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               id="notes"
               name="notes"
               rows={4}
+              maxLength={1200}
               value={notes}
               onChange={(event) => {
                 requireFreshAiReview();

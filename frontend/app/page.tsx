@@ -6,10 +6,10 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { WELLNESS_DIMENSIONS } from "@/lib/wellness";
 
 export const metadata: Metadata = {
-  title: "DeskOps — one calm queue for real life",
+  title: "DeskOps: one calm queue for real life",
   description: "Capture life admin, decide what matters, and reflect privately with an optional Wellness Wheel.",
   openGraph: {
-    title: "DeskOps — one calm queue for real life",
+    title: "DeskOps: one calm queue for real life",
     description: "AI drafts. You decide. DeskOps turns the things you are carrying into one reviewable queue.",
     type: "website",
   },

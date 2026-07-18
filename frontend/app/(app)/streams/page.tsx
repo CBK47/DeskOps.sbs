@@ -1,11 +1,11 @@
 import { listStreams } from "@/lib/db/streams";
 import { StreamPill } from "@/components/stream/StreamPill";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Layers3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { archiveStreamAction, createStreamAction, seedDemoWorkspaceAction } from "@/app/actions/streams";
+import { PendingButton } from "@/components/ui/pending-button";
 
 // Keys mirror StreamPill's COLOR_CLASSES so a chosen colour always renders.
 const STREAM_COLORS = [
@@ -13,7 +13,12 @@ const STREAM_COLORS = [
   "rose", "lime", "pink", "red", "cyan", "violet",
 ];
 
-export default async function StreamsPage() {
+export default async function StreamsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
+  const { error, notice } = await searchParams;
   const streams = await listStreams();
 
   return (
@@ -26,17 +31,31 @@ export default async function StreamsPage() {
         </div>
         {streams.length === 0 && (
           <form action={seedDemoWorkspaceAction}>
-            <Button type="submit" variant="secondary">Set up demo workspace</Button>
+            <PendingButton pendingLabel="Setting up…" variant="secondary">Set up demo workspace</PendingButton>
           </form>
         )}
       </header>
+
+      {error && (
+        <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+      {notice && (
+        <div role="status" className="rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 text-sm text-foreground">
+          {notice}
+        </div>
+      )}
 
       <form action={createStreamAction} className="surface-panel grid items-end gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_10rem_auto] sm:p-5">
         <div className="flex-1 space-y-1.5">
           <Label htmlFor="name">New stream</Label>
           <Input id="name" name="name" placeholder="e.g. House" required />
         </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="stream-colour">Colour</Label>
         <select
+          id="stream-colour"
           name="color"
           defaultValue="slate"
           aria-label="Stream colour"
@@ -46,7 +65,8 @@ export default async function StreamsPage() {
             <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
           ))}
         </select>
-        <Button type="submit" size="lg">Add stream</Button>
+        </div>
+        <PendingButton pendingLabel="Adding…" size="lg">Add stream</PendingButton>
       </form>
 
       {streams.length === 0 ? (
@@ -57,15 +77,15 @@ export default async function StreamsPage() {
         </div>
       ) : <ul className="divide-y overflow-hidden rounded-lg border bg-card/40">
         {streams.map(s => (
-          <li key={s.id} className="flex items-center justify-between gap-3 p-3 transition-colors duration-150 hover:bg-accent/40">
-            <div className="flex items-center gap-2">
+          <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 p-3 transition-colors duration-150 hover:bg-accent/40">
+            <div className="flex min-w-0 items-center gap-2">
               <StreamPill name={s.name} color={s.color} />
               {s.archived && <span className="text-xs text-muted-foreground">archived</span>}
             </div>
             <div className="flex items-center gap-1">
               {s.life_domain === "career" && !s.archived && <Link href={`/invoices/draft?stream=${s.id}`} className="rounded-lg px-2 py-1 text-sm text-primary hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Draft Occupational invoice</Link>}
               <form action={archiveStreamAction.bind(null, s.id, !s.archived)}>
-                <Button type="submit" variant="ghost" size="sm">{s.archived ? "Unarchive" : "Archive"}</Button>
+                <PendingButton pendingLabel={s.archived ? "Restoring…" : "Archiving…"} variant="ghost" size="sm">{s.archived ? "Unarchive" : "Archive"}</PendingButton>
               </form>
             </div>
           </li>

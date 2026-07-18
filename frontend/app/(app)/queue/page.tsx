@@ -29,6 +29,11 @@ export default async function QueuePage({
 
   return (
     <div className="space-y-6">
+      {typeof resolvedSearchParams.notice === "string" && (
+        <div role="status" className="rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 text-sm text-foreground">
+          {resolvedSearchParams.notice}
+        </div>
+      )}
       <header className="queue-heading">
         <div>
           <p className="signal-label">Personal operations</p>

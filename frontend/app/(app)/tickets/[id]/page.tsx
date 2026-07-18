@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import { getTicket } from "@/lib/db/tickets";
 import { TicketForm } from "@/components/ticket/TicketForm";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { closeTicketAction, deleteTicketAction, updateTicketAction } from "@/app/actions/tickets";
 import { StreamPill } from "@/components/stream/StreamPill";
 import { DeleteTicketButton } from "@/components/ticket/DeleteTicketButton";
 import { STATUS_LABELS } from "@/lib/ticket-options";
 import Link from "next/link";
+import { PendingButton } from "@/components/ui/pending-button";
 
 // Dark-aware per DESIGN.md.
 const STATUS_COLOR: Record<string, string> = {
@@ -17,8 +17,15 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled:   "bg-zinc-100 text-zinc-700 dark:bg-zinc-500/15 dark:text-zinc-300",
 };
 
-export default async function TicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TicketDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
   const { id } = await params;
+  const { error, notice } = await searchParams;
   const ticket = await getTicket(id);
   if (!ticket) notFound();
 
@@ -41,11 +48,22 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
         </div>
         <div className="flex flex-wrap gap-2">
           {ticket.status !== "done" && (
-            <form action={close}><Button type="submit" variant="secondary">Mark done</Button></form>
+            <form action={close}><PendingButton pendingLabel="Marking done…" variant="secondary">Mark done</PendingButton></form>
           )}
           <DeleteTicketButton action={del} />
         </div>
       </header>
+
+      {error && (
+        <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+      {notice && (
+        <div role="status" className="rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 text-sm text-foreground">
+          {notice}
+        </div>
+      )}
 
       <TicketForm action={update} ticket={ticket} submitLabel="Save changes" />
     </div>

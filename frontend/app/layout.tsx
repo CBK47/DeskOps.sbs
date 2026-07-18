@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://deskops.sbs"),
   title: {
-    default: "DeskOps — one calm queue for real life",
+    default: "DeskOps: one calm queue for real life",
     template: "%s · DeskOps",
   },
   description: "A private life-operations desk with one reviewable queue and an optional Wellness Wheel.",

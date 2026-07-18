@@ -11,9 +11,13 @@ export function Reveal({ children, className }: { children: React.ReactNode; cla
     const node = ref.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true);
       return;
     }
+
+    // Content is visible in the server-rendered HTML. Only opt into the
+    // entrance state once JavaScript is running so a failed hydration or a
+    // script blocker can never leave marketing content permanently hidden.
+    node.dataset.revealReady = "true";
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

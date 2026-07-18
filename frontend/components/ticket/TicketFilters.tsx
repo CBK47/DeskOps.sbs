@@ -132,7 +132,7 @@ function FilterChip({ active, label, onClick }: { active: boolean; label: string
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+      className="filter-chip rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
     >
       <Badge
         variant={active ? "default" : "outline"}

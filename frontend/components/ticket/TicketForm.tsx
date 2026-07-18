@@ -1,11 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StreamPicker } from "@/components/stream/StreamPicker";
 import { PRIORITY_ITEMS, RECURRENCE_ITEMS } from "@/lib/ticket-options";
 import type { Ticket } from "@/lib/db/tickets";
+import { PendingButton } from "@/components/ui/pending-button";
 
 export function TicketForm({
   action,
@@ -20,18 +20,18 @@ export function TicketForm({
     <form action={action} className="surface-panel space-y-5 p-5 sm:p-7">
       <div className="space-y-1.5">
         <Label htmlFor="title">Title</Label>
-        <Input id="title" name="title" required defaultValue={ticket?.title} autoFocus />
+        <Input id="title" name="title" required maxLength={160} defaultValue={ticket?.title} autoFocus />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label>Stream</Label>
-          <StreamPicker defaultValue={ticket?.stream_id} />
+          <Label htmlFor="stream_id">Stream</Label>
+          <StreamPicker id="stream_id" defaultValue={ticket?.stream_id} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="priority">Priority</Label>
           <Select name="priority" defaultValue={ticket?.priority ?? "medium"} items={PRIORITY_ITEMS}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="priority" className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="low">Low</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
@@ -50,7 +50,7 @@ export function TicketForm({
         <div className="space-y-1.5">
           <Label htmlFor="recurrence">Recurrence</Label>
           <Select name="recurrence" defaultValue={ticket?.recurrence ?? "none"} items={RECURRENCE_ITEMS}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="recurrence" className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="none">None</SelectItem>
               <SelectItem value="daily">Daily</SelectItem>
@@ -64,11 +64,11 @@ export function TicketForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="notes">Notes</Label>
-        <Textarea id="notes" name="notes" rows={4} defaultValue={ticket?.notes ?? ""} />
+        <Textarea id="notes" name="notes" rows={4} maxLength={1200} defaultValue={ticket?.notes ?? ""} />
       </div>
 
       <div className="flex justify-end border-t border-border/70 pt-5">
-        <Button type="submit" size="lg">{submitLabel}</Button>
+        <PendingButton pendingLabel="Saving…" size="lg">{submitLabel}</PendingButton>
       </div>
     </form>
   );
