@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
   listStreams: vi.fn(),
+  getLatestWellnessAssessment: vi.fn(),
   responsesCreate: vi.fn(),
 }));
 
@@ -14,6 +15,10 @@ vi.mock("@/lib/db/streams", () => ({
   listStreams: mocks.listStreams,
 }));
 
+vi.mock("@/lib/db/wellness", () => ({
+  getLatestWellnessAssessment: mocks.getLatestWellnessAssessment,
+}));
+
 vi.mock("@/lib/agent/openai", () => ({
   getOpenAIClient: () => ({
     client: { responses: { create: mocks.responsesCreate } },
@@ -21,7 +26,7 @@ vi.mock("@/lib/agent/openai", () => ({
   }),
 }));
 
-import { draftTicketAction, polishInvoiceAction } from "@/app/actions/agent";
+import { draftRebalanceAction, draftTicketAction, polishInvoiceAction } from "@/app/actions/agent";
 import { AGENT_REQUEST_LIMIT, resetAgentRateLimitForTests } from "@/lib/agent/rate-limit";
 
 const ticketCandidate = {
@@ -43,6 +48,17 @@ describe("AI action boundaries", () => {
     mocks.listStreams.mockResolvedValue([
       { id: "stream-home", name: "Home", life_domain: "money", archived: false },
     ]);
+    mocks.getLatestWellnessAssessment.mockResolvedValue({
+      id: "assessment-1",
+      entries: [{
+        dimension: "physical",
+        current_rating: 4,
+        desired_rating: 8,
+        focus_state: "active_focus",
+        areas: ["Fitness and movement"],
+        created_at: "2026-07-18T12:00:00.000Z",
+      }],
+    });
     mocks.responsesCreate.mockResolvedValue({ output_text: JSON.stringify(ticketCandidate) });
   });
 
@@ -61,6 +77,17 @@ describe("AI action boundaries", () => {
       ok: false,
       code: "unauthenticated",
     });
+    expect(mocks.responsesCreate).not.toHaveBeenCalled();
+  });
+
+  it("refuses an anonymous rebalance draft at the action boundary", async () => {
+    mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
+
+    await expect(draftRebalanceAction("assessment-1")).resolves.toMatchObject({
+      ok: false,
+      code: "unauthenticated",
+    });
+    expect(mocks.getLatestWellnessAssessment).not.toHaveBeenCalled();
     expect(mocks.responsesCreate).not.toHaveBeenCalled();
   });
 
@@ -107,5 +134,28 @@ describe("AI action boundaries", () => {
       code: "temporarily_unavailable",
       error: "Busy moment — try again shortly.",
     });
+  });
+
+  it("drafts exactly one rebalance ticket from the deterministic selection", async () => {
+    mocks.responsesCreate.mockResolvedValueOnce({
+      output_text: JSON.stringify({
+        title: "Take a ten-minute walk",
+        description: "Choose a comfortable route and leave the rest of the hour open.",
+        suggested_stream_name: "Home",
+      }),
+    });
+
+    await expect(draftRebalanceAction("assessment-1")).resolves.toEqual({
+      ok: true,
+      dimension: "physical",
+      draft: {
+        title: "Take a ten-minute walk",
+        notes: "Choose a comfortable route and leave the rest of the hour open.",
+        stream_id: "stream-home",
+        suggested_stream_name: "Home",
+      },
+    });
+    expect(mocks.responsesCreate).toHaveBeenCalledOnce();
+    expect(mocks.responsesCreate.mock.calls[0][0]).toMatchObject({ store: false });
   });
 });

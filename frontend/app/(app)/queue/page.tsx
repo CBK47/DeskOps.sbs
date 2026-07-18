@@ -6,6 +6,7 @@ import { getLatestWellnessAssessment } from "@/lib/db/wellness";
 import { TicketRow } from "@/components/ticket/TicketRow";
 import { TicketFilters } from "@/components/ticket/TicketFilters";
 import { WellnessWheel } from "@/components/wellness/WellnessWheel";
+import { RebalanceSuggestion } from "@/components/rebalance/RebalanceSuggestion";
 
 export default async function QueuePage({
   searchParams,
@@ -26,6 +27,9 @@ export default async function QueuePage({
     getLatestWellnessAssessment(),
   ]);
   const hasAnyTickets = tickets.length > 0 || (await countAllTickets()) > 0;
+  const activeStreams = streams
+    .filter((stream) => !stream.archived)
+    .map((stream) => ({ id: stream.id, name: stream.name }));
 
   return (
     <div className="space-y-6">
@@ -45,6 +49,8 @@ export default async function QueuePage({
           <span className="text-xs text-muted-foreground">shown now</span>
         </div>
       </header>
+
+      <RebalanceSuggestion assessment={latestAssessment} streams={activeStreams} />
 
       <div className="grid items-start gap-6 xl:grid-cols-[23rem_minmax(0,1fr)]">
         <aside className="space-y-4 xl:sticky xl:top-20">
@@ -73,7 +79,7 @@ export default async function QueuePage({
             </div>
             <span className="font-mono text-xs tabular-nums text-muted-foreground">{density}</span>
           </div>
-          <TicketFilters streams={streams.filter((stream) => !stream.archived).map((stream) => ({ id: stream.id, name: stream.name }))} />
+          <TicketFilters streams={activeStreams} />
 
           {tickets.length === 0 ? (
             hasAnyTickets ? (
