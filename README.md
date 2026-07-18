@@ -19,6 +19,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
 - Natural-language ticket drafting with GPT-5.6, always editable and saved only by the user
+- One calm Rebalance suggestion chosen deterministically from the latest tracked Wellness gap, then drafted as one editable ticket
 
 ## Stack
 
@@ -142,6 +143,7 @@ The demo focuses on this end-to-end flow:
 1. A user types or speaks a messy life-admin brain dump.
 2. An AI assistant proposes tasks, deadlines and priorities for review.
 3. The person may separately record a private Wellness Wheel snapshot and choose their own focus.
+4. Rebalance selects one tracked gap deterministically and GPT-5.6 drafts one small step that the person may edit, add or dismiss.
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.
 
@@ -150,6 +152,8 @@ See [HACKATHON.md](HACKATHON.md) for the Build Week scope, prior-work boundary, 
 ## Built with Codex
 
 DeskOps is created by CBK47 with OpenAI Codex and GPT-5.6 for OpenAI Build Week. Codex accelerated the architecture, database migrations, deterministic tests, product UI, security review, repository rebuild, and documentation. The repository history preserves the sanitised prior-work boundary followed by the Build Week feature commits.
+
+The dated evidence boundary is explicit: `5e6ed8d` is the sanitised import of the pre-existing DeskOps MVP on 16 July 2026. Submission-period work begins with `d840cc2` and every later commit. On 18 July 2026, a bounded Codex improvement loop added the AI action gate (`1b87a61`), made invoice tooling personal-only (`bf816ef`), reduced AI tickets to one human decision (`f8bc359`), and delivered Rebalance V1 (`fbff318`). Each task passed the full test and Worker-build gates before it was pushed.
 
 This public repository rebuild was completed in Codex session `019f6cac-1f8d-7111-a538-a0f0171070d5`. See [HACKATHON.md](HACKATHON.md) for the submission record and [docs/REBUILD.md](docs/REBUILD.md) for the repository arrangement.
 

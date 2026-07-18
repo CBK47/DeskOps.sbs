@@ -16,9 +16,9 @@ Do not treat them as the same state.
 
 ## Executive status
 
-The redesign and Wellness foundation are implemented, verified and pushed to the working branch. Production has not been migrated or deployed and still serves the pre-redesign application from `main`.
+The redesign, private Wellness foundation, secured AI draft boundary and Rebalance V1 are implemented, verified and pushed to the working branch. Production has not been migrated or deployed and still serves the pre-redesign application from `main`.
 
-The product code is ready for a controlled release process, but it should not be promoted by deploying the frontend alone. The new Wellness tables are absent from the configured Supabase project, and the AI server actions still need an explicit authentication and rate-limiting gate before a broader public demo.
+The product code is ready for a controlled release process, but it should not be promoted by deploying the frontend alone. The new Wellness tables are absent from the configured Supabase project. The exact production Supabase and Cloudflare targets still require human confirmation before the schema and Worker can be promoted in order.
 
 ## Source-control state
 
@@ -27,7 +27,7 @@ The product code is ready for a controlled release process, but it should not be
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
 | Production branch | `main` at `8cd6f8b` |
 | Review branch | `codex/frontend-wellness-redesign` |
-| Functional implementation baseline | `6587e10` (`feat: create studio-style login entrance`) |
+| Functional implementation baseline | `fbff318` (`feat: draft one calm rebalance step`) |
 | Review branch pushed | Yes |
 | Review branch merged to `main` | No |
 | Force-push required | No |
@@ -38,7 +38,11 @@ The implementation commits on the review branch are:
 2. `c2d81c6` — public and product surface redesign;
 3. `e936fba` — Impeccable polish and hardening;
 4. `53176b9` — focused Confer-inspired login experience;
-5. `6587e10` — studio-style login entrance using the approved orbital artwork.
+5. `6587e10` — studio-style login entrance using the approved orbital artwork;
+6. `1b87a61` — authenticated and rate-limited AI action boundary;
+7. `bf816ef` — default-off personal-mode invoice tooling;
+8. `f8bc359` — one-decision AI ticket capture;
+9. `fbff318` — deterministic Rebalance selection and one-ticket draft flow.
 
 ## What is implemented on the review branch
 
@@ -53,10 +57,12 @@ The implementation commits on the review branch are:
 
 - The authenticated queue at `/queue`, with filters, density control, loading, empty and error states.
 - Updated desktop and mobile navigation.
-- Quick capture with a no-stream first-run path and explicit AI-draft review.
+- Quick capture with a no-stream first-run path, editable AI fields and one user-controlled **Add ticket** action.
 - Friendly stream and ticket mutation feedback, pending states and server-side input validation.
 - Accessible destructive-action confirmation rather than a native browser prompt.
-- Review-only Occupational invoice drafting with deterministic figures.
+- Invoice tooling retained behind default-off server and client personal-mode flags, absent from the public product.
+- AI actions require an authenticated user, share a per-user sliding-window limiter and return calm typed retry states.
+- Rebalance deterministically chooses the largest tracked Wellness gap, lets active focus break a tie, drafts exactly one small ticket, and supports edit, add or session-only dismissal.
 
 ### Wellness foundation
 
@@ -80,7 +86,7 @@ The current functional implementation passed:
 
 - `npm run typecheck`;
 - `npm run lint`;
-- `npm run test`: 10 files, 57 tests;
+- `npm run test`: 17 files, 77 tests;
 - `npm run test:e2e`: 5 Chromium tests;
 - `npm run worker:build`: successful OpenNext Cloudflare bundle.
 
@@ -106,15 +112,6 @@ The production OpenAI secret/model configuration was not inspected and should re
 
 `20260718000001_wellness_assessments.sql` must be applied to the intended production Supabase project before deploying the review branch. The queue and callback read the new table, so a frontend-only deployment risks breaking authenticated navigation.
 
-### P0: explicit AI action protection
-
-The ticket draft path reaches OpenAI only after an authenticated user's RLS-filtered streams are available, but the server-action boundary does not explicitly assert authentication. The invoice-polish action accepts a supplied draft and has no explicit authentication or application rate limiter. Before a public demo, add:
-
-- an explicit authenticated-user check at both AI action boundaries;
-- per-user and per-IP limits appropriate for Cloudflare;
-- tests for unauthenticated and rate-limited requests;
-- a clear user-facing retry response for `429` and transient model errors.
-
 ### P1: controlled promotion
 
 After the schema and AI gate are ready:
@@ -122,7 +119,7 @@ After the schema and AI gate are ready:
 1. rebuild from the exact release commit with the public Supabase variables present;
 2. configure server-only OpenAI secrets without printing or committing them;
 3. deploy the Cloudflare Worker;
-4. smoke-test `/`, `/login`, OAuth callback, `/queue`, assessment save/history, AI draft and invoice polish;
+4. smoke-test `/`, `/login`, OAuth callback, `/queue`, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
 5. merge or fast-forward `main` only when the live release is confirmed;
 6. record the release commit and deployment time here.
 
@@ -130,8 +127,8 @@ After the schema and AI gate are ready:
 
 - Reminder cadence is stored but DeskOps does not send reminders.
 - Companion tools are independent outbound links, not integrations.
-- Invoice quantities default to one hour because persisted time tracking does not exist.
-- The Rebalance agent described in the historical Build Week plans is not implemented.
+- Invoice drafting remains a hidden personal-mode extra; its quantities default to one hour because persisted time tracking does not exist.
+- The current AI limiter is intentionally per-user, per Worker isolate and in memory. Move it to Cloudflare KV or a Durable Object before material public traffic or cross-isolate enforcement is required.
 - Nested Wellness areas, context tags, organisation workspaces, roles and client portals are not implemented.
 - The old ticket-derived `life_domain` Wheel calculation remains in historical code/tests but is no longer presented as a personal wellness score.
 - The correct core-build Codex session ID is still not recorded; the repository currently records the sanitised rebuild session.
@@ -141,12 +138,11 @@ After the schema and AI gate are ready:
 
 Fabel should help choose and sequence these outcomes rather than treating every historical checkbox as active:
 
-1. **Release-first:** secure the AI actions, apply the migration and deploy the redesign safely.
-2. **Differentiation-first:** design and build the one-suggestion Rebalance agent after the security gate.
-3. **Platform-first:** design the owning-workspace, membership and client-portal model before adding collaboration UI.
-4. **Submission-first:** close the session-ID, demo-video, live-demo and Devpost evidence gaps.
+1. **Release-first:** confirm targets, apply the migration and deploy the verified redesign and Rebalance flow safely.
+2. **Submission-first:** close the session-ID, demo-video, live-demo and Devpost evidence gaps around the released product.
+3. **Platform-later:** design the owning-workspace, membership and client-portal model only after the bounded submission work is complete.
 
-Recommended default: release-first, then choose exactly one of the other three tracks for the next bounded loop.
+Recommended default: release-first, then submission-first. Keep platform work outside the current Build Week release.
 
 ## Guardrails for an autonomous loop
 
@@ -162,7 +158,7 @@ Recommended default: release-first, then choose exactly one of the other three t
 
 ## Copy-paste brief for Fabel
 
-> Read `PRODUCT.md`, `DESIGN.md`, `docs/SITREP.md`, `docs/frontend-redesign-plan.md`, and the historical `WINNING-PLAN.md` and `NEMO-EXECUTION-PLAN.md`. Produce a concise two-part plan: **Where DeskOps is now** and **Where DeskOps should be next**. Reconcile the implemented private Wellness assessment with the unimplemented Rebalance and workspace ideas. Prioritise a safe release, name dependencies and explicit human approvals, define measurable exit criteria, and propose a bounded autonomous loop for Codex. Do not implement, deploy, migrate, change secrets or submit anything during the planning pass.
+> Read `PRODUCT.md`, `DESIGN.md`, `docs/SITREP.md`, `docs/RELEASE-CHECKLIST.md`, `docs/frontend-redesign-plan.md`, and the historical `WINNING-PLAN.md` and `NEMO-EXECUTION-PLAN.md`. Produce a concise two-part plan: **Where DeskOps is now** and **Where DeskOps should be next**. Treat the private Wellness assessment, secured AI boundary and Rebalance V1 as implemented. Prioritise a safe release and submission evidence, name dependencies and explicit human approvals, define measurable exit criteria, and propose a bounded autonomous loop for Codex. Do not implement, deploy, migrate, change secrets or submit anything during the planning pass.
 
 ## Next human decision
 
