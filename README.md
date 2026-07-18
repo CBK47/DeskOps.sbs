@@ -84,16 +84,18 @@ Use the generic `frontend/keepalive/.dev.vars.example` only as a local template.
 
 ### Deploy the app to Cloudflare Workers
 
-Set the application configuration in Cloudflare before the first deploy. The Supabase URL and anon key are browser-visible by design, while the OpenAI key and model remain server-only.
+The public Supabase URL and anon key must be present in `frontend/.env.local` **when the Next.js build runs**. They are browser-visible by design and are compiled into the client bundle. Worker runtime secrets alone cannot supply `NEXT_PUBLIC_*` values to a browser after deployment.
+
+Keep the server-only values as Cloudflare Worker secrets:
 
 ```bash
 cd frontend
-wrangler secret put NEXT_PUBLIC_SUPABASE_URL
-wrangler secret put NEXT_PUBLIC_SUPABASE_ANON_KEY
 wrangler secret put OPENAI_API_KEY
 wrangler secret put OPENAI_MODEL
 npm run worker:deploy
 ```
+
+`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` may also be set as Worker secrets for server-side runtime access, but that does not replace their build-time values in `frontend/.env.local`.
 
 The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudflare account step.
 
