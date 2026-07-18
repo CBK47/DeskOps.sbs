@@ -18,7 +18,7 @@ The Build Week work begins after that commit:
 
 1. `feat: add life domains and Wheel of Life`
 2. `feat: draft tickets from natural language`
-3. `feat: add reviewable Career invoice drafts`
+3. `feat: add private Wellness assessments and redesigned product surfaces`
 
 Commit hashes were intentionally omitted because the public history was rebuilt to normalise the maintainer identity and remove stale private identifiers while preserving the sequence and prior-work boundary.
 
@@ -28,7 +28,6 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 2. The unified queue holds the work, while the optional Wellness Wheel keeps reflection separate from workload.
 3. Enter a task naturally, for example: `renew the van insurance next Friday, high priority`.
 4. GPT-5.6 returns a structured ticket draft. The user checks and confirms it before it is saved.
-5. Open an eligible work stream, choose **Draft Occupational invoice**, set an hourly rate, and review the deterministic line items. GPT-5.6 may polish copy, but never changes the figures.
 
 ## Technology
 
@@ -42,13 +41,10 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 
 - AI proposes ticket fields. The user submits the existing form to write a ticket.
 - Editing an AI-filled field clears approval. Editing the original description requires a fresh draft and another review.
-- AI may polish invoice text only. Quantities, rates, subtotals, and totals are deterministic.
-- Invoice drafts are not saved, exported, or sent.
 
 ## Scope deliberately parked
 
 - Chore automation and home-assistant integrations
-- PDF invoices or persisted invoices
 - Digest emails
 - Shared household/client workspaces and multi-user permissions
 - Recurrence intelligence
@@ -60,4 +56,4 @@ Commit hashes were intentionally omitted because the public history was rebuilt 
 - [ ] Add a public demo video under three minutes.
 - [ ] Configure `OPENAI_API_KEY` and `OPENAI_MODEL` as Cloudflare Worker secrets.
 - [ ] Apply the Supabase migrations and seed only generic demo data.
-- [ ] Verify the deployed Google sign-in, Wheel, AI draft, and invoice draft.
+- [ ] Verify the deployed Google sign-in, Wheel, and AI draft.

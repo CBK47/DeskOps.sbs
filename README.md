@@ -4,7 +4,7 @@
 
 DeskOps brings the clarity of a service desk to life admin. Capture a task once, assign it to the right stream, prioritise it, and work from one calm, filterable queue instead of a pile of scattered notes, reminders, and messages.
 
-DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It combines a GPT-5.6 draft agent, a private Wellness Wheel, and review-only invoice drafts for Occupational work.
+DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It combines a GPT-5.6 draft agent with a private Wellness Wheel while keeping every decision with the person using it.
 
 **Project domain:** [deskops.sbs](https://deskops.sbs)
 
@@ -19,7 +19,6 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
 - Natural-language ticket drafting with GPT-5.6, always reviewed before saving
-- Review-only Occupational invoice drafts with deterministic itemised totals
 
 ## Stack
 
@@ -53,6 +52,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
 OPENAI_API_KEY=<your-openai-api-key>
 OPENAI_MODEL=gpt-5.6
 ```
+
+Invoice drafting remains available as a personal-mode extra and is hidden by default. Set both `ENABLE_INVOICES=true` and `NEXT_PUBLIC_ENABLE_INVOICES=true` locally to restore it.
 
 Apply the database schema to a linked Supabase project, then generate the typed database client:
 
@@ -130,9 +131,9 @@ The root package is an npm workspace orchestrator, so the documented `npm run ..
 
 ## OpenAI configuration
 
-`OPENAI_API_KEY` and `OPENAI_MODEL` are server-only variables. The Build Week configuration uses `OPENAI_MODEL=gpt-5.6`, the current GPT-5.6 alias. DeskOps sends natural-language ticket text and optional invoice copy to the Responses API with `store: false`.
+`OPENAI_API_KEY` and `OPENAI_MODEL` are server-only variables. The Build Week configuration uses `OPENAI_MODEL=gpt-5.6`, the current GPT-5.6 alias. DeskOps sends natural-language ticket text to the Responses API with `store: false`.
 
-AI never writes tickets, sends invoices, or changes financial totals. It only produces a draft for the signed-in user to review.
+AI never writes tickets or takes an external action. It only produces a draft for the signed-in user to review.
 
 ## Build Week build
 
@@ -141,7 +142,6 @@ The demo focuses on this end-to-end flow:
 1. A user types or speaks a messy life-admin brain dump.
 2. An AI assistant proposes tasks, deadlines and priorities for review.
 3. The person may separately record a private Wellness Wheel snapshot and choose their own focus.
-4. Work items can be associated with a client and converted into a reviewable invoice draft.
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.
 

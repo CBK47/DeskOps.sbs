@@ -6,6 +6,7 @@ import { InvoiceDraftPanel } from "@/components/invoice/InvoiceDraftPanel";
 import { buildInvoiceDraft, parseHourlyRate } from "@/lib/agent/draftInvoice";
 import { getStream } from "@/lib/db/streams";
 import { listCompletedTicketsForStream } from "@/lib/db/tickets";
+import { isInvoiceFeatureEnabled } from "@/lib/features";
 import Link from "next/link";
 
 export default async function InvoiceDraftPage({
@@ -13,6 +14,8 @@ export default async function InvoiceDraftPage({
 }: {
   searchParams: Promise<{ stream?: string; rate?: string }>;
 }) {
+  if (!isInvoiceFeatureEnabled()) notFound();
+
   const { stream: streamId, rate } = await searchParams;
   if (!streamId) notFound();
 

@@ -6,8 +6,9 @@ import { polishInvoiceCopy, type InvoiceDraft, type InvoicePolishResult } from "
 import { AGENT_BUSY_MESSAGE, ticketDraftErrorMessage } from "@/lib/agent/draft-error";
 import { takeAgentRequestSlot } from "@/lib/agent/rate-limit";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
+import { isInvoiceActionEnabled } from "@/lib/features";
 
-export type AgentActionErrorCode = "unauthenticated" | "rate_limited" | "temporarily_unavailable" | "invalid_request" | "not_configured";
+export type AgentActionErrorCode = "unauthenticated" | "rate_limited" | "temporarily_unavailable" | "invalid_request" | "not_configured" | "feature_disabled";
 export type AgentActionFailure = { ok: false; code: AgentActionErrorCode; error: string };
 
 export type TicketDraftResult = { ok: true; draft: TicketDraft } | AgentActionFailure;
@@ -36,6 +37,9 @@ export type InvoicePolishActionResult = { ok: true; polish: InvoicePolishResult 
 export async function polishInvoiceAction(draft: InvoiceDraft): Promise<InvoicePolishActionResult> {
   const userId = await authenticatedUserId();
   if (!userId) return unauthenticatedFailure();
+  if (!isInvoiceActionEnabled()) {
+    return { ok: false, code: "feature_disabled", error: "Invoice drafting is unavailable in this workspace." };
+  }
   if (!takeAgentRequestSlot(userId)) return busyFailure("rate_limited");
 
   try {

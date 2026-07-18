@@ -113,8 +113,8 @@ export default function LandingPage() {
                 <div key={item} className="occupational-branch"><span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>{item}</div>
               ))}
               <div className="mt-8 border-t border-border/70 pt-6">
-                <p className="signal-label">Reviewable finance path</p>
-                <p className="mt-3 max-w-lg leading-7 text-muted-foreground">Completed client tickets can become an invoice draft. Quantities and totals remain deterministic; AI may polish wording, never the figures or the send button.</p>
+                <p className="signal-label">Context stays visible</p>
+                <p className="mt-3 max-w-lg leading-7 text-muted-foreground">Personal plans, client work and internal projects can share one queue without losing the context that makes each next step useful.</p>
               </div>
             </div>
           </Reveal>
@@ -131,7 +131,7 @@ export default function LandingPage() {
                 {[
                   "AI ticket suggestions stay drafts until you review them.",
                   "Wellness ratings are optional and never set priorities automatically.",
-                  "Invoice figures come from deterministic code, not generated text.",
+                  "Every suggested field remains editable before anything is saved.",
                   "Companion tools are ordinary links; no assessment data is shared.",
                 ].map((item) => <li key={item}><Check className="h-4 w-4 text-primary" aria-hidden /><span>{item}</span></li>)}
               </ul>

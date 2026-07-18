@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
@@ -38,11 +38,16 @@ describe("AI action boundaries", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetAgentRateLimitForTests();
+    vi.stubEnv("ENABLE_INVOICES", "true");
     mocks.getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
     mocks.listStreams.mockResolvedValue([
       { id: "stream-home", name: "Home", life_domain: "money", archived: false },
     ]);
     mocks.responsesCreate.mockResolvedValue({ output_text: JSON.stringify(ticketCandidate) });
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("refuses anonymous ticket drafts and invoice polish calls", async () => {
@@ -70,6 +75,17 @@ describe("AI action boundaries", () => {
       error: "Busy moment — try again shortly.",
     });
     expect(mocks.responsesCreate).toHaveBeenCalledTimes(AGENT_REQUEST_LIMIT);
+  });
+
+  it("refuses invoice polish when the server feature flag is off", async () => {
+    vi.stubEnv("ENABLE_INVOICES", "false");
+
+    await expect(polishInvoiceAction({ line_items: [], total_pence: 0, summary: "" })).resolves.toEqual({
+      ok: false,
+      code: "feature_disabled",
+      error: "Invoice drafting is unavailable in this workspace.",
+    });
+    expect(mocks.responsesCreate).not.toHaveBeenCalled();
   });
 
   it("keeps a normal authenticated draft working through the mocked Responses API", async () => {

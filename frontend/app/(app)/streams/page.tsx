@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { archiveStreamAction, createStreamAction, seedDemoWorkspaceAction } from "@/app/actions/streams";
 import { PendingButton } from "@/components/ui/pending-button";
+import { isInvoiceFeatureEnabled } from "@/lib/features";
 
 // Keys mirror StreamPill's COLOR_CLASSES so a chosen colour always renders.
 const STREAM_COLORS = [
@@ -20,6 +21,7 @@ export default async function StreamsPage({
 }) {
   const { error, notice } = await searchParams;
   const streams = await listStreams();
+  const invoicesEnabled = isInvoiceFeatureEnabled();
 
   return (
     <div className="space-y-6">
@@ -83,7 +85,7 @@ export default async function StreamsPage({
               {s.archived && <span className="text-xs text-muted-foreground">archived</span>}
             </div>
             <div className="flex items-center gap-1">
-              {s.life_domain === "career" && !s.archived && <Link href={`/invoices/draft?stream=${s.id}`} className="rounded-lg px-2 py-1 text-sm text-primary hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Draft Occupational invoice</Link>}
+              {invoicesEnabled && s.life_domain === "career" && !s.archived && <Link href={`/invoices/draft?stream=${s.id}`} className="rounded-lg px-2 py-1 text-sm text-primary hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Draft Occupational invoice</Link>}
               <form action={archiveStreamAction.bind(null, s.id, !s.archived)}>
                 <PendingButton pendingLabel={s.archived ? "Restoring…" : "Archiving…"} variant="ghost" size="sm">{s.archived ? "Unarchive" : "Archive"}</PendingButton>
               </form>
