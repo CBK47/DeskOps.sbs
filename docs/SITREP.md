@@ -5,7 +5,7 @@
 | Snapshot | 19 July 2026 |
 | Purpose | Authoritative hand-off for the next planning loop |
 | Repository | `CBK47/DeskOps.sbs` |
-| Working branch | `codex/frontend-wellness-redesign` |
+| Working branch | `main` |
 
 This document answers two different questions separately:
 
@@ -16,20 +16,20 @@ Do not treat them as the same state.
 
 ## Executive status
 
-The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented, verified and merged to `main`. A separate `codex/demo-agent-sandbox` release branch is adding a public synthetic Demo Agents sandbox. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
+The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login, production-grade AI limiter and public synthetic Demo Agents sandbox are implemented, verified, merged to `main` and deployed to `https://deskops.sbs`. The additive Wellness migration is live in the confirmed production Supabase project.
 
-The release branch can be pushed safely, but a full demo deployment remains gated on the missing `OPENAI_API_KEY` and `OPENAI_MODEL` Worker secrets. GitHub and email login are implemented with provider-aware visibility, but Supabase must still be given a GitHub OAuth app and production SMTP before those options become live.
+The public `/demo` route is ready for judges without a model key, shared credentials or external tools. The authenticated OpenAI drafting flow remains gated on the missing `OPENAI_API_KEY` and `OPENAI_MODEL` Worker secrets. GitHub and email login remain code-ready but need their external OAuth and SMTP configuration before they become visible.
 
 ## Source-control state
 
 | Item | State |
 | --- | --- |
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
-| Production branch | `main` promoted through `11d4699` on 19 July 2026 |
+| Production branch | `main` deployed through `d65bf209` on 19 July 2026 |
 | Review branch | `codex/frontend-wellness-redesign` |
 | Prior release-evidence baseline | `66a8bc4` (`docs: close bounded improvement loop`) |
 | Review branch pushed | Yes |
-| Review branch merged to `main` | Yes, PR [#1](https://github.com/CBK47/DeskOps.sbs/pull/1) |
+| Review branches merged to `main` | Yes, PR [#1](https://github.com/CBK47/DeskOps.sbs/pull/1) and PR [#2](https://github.com/CBK47/DeskOps.sbs/pull/2) |
 | Force-push required | No |
 
 The implementation commits on the review branch are:
@@ -45,6 +45,7 @@ The implementation commits on the review branch are:
 9. `fbff318` — deterministic Rebalance selection and one-ticket draft flow;
 10. `8adb64e` — Rebalance retry, dismissal and keyboard-focus polish.
 11. `66a8bc4` — bounded-loop release and submission documentation.
+12. `ccbd5c7` — safe public Demo Agents sandbox.
 
 The current `main` release changes add provider-aware Google, GitHub and email magic-link entry, a token-hash confirmation route, a SQLite-backed per-user Durable Object AI limiter, regenerated production database types and updated release evidence.
 
@@ -60,14 +61,15 @@ The current `main` release changes add provider-aware Google, GitHub and email m
 - Public privacy, terms and not-found pages.
 - Restrained marketing reveals with a no-JavaScript fallback and reduced-motion support.
 
-### Pending public Demo Agents branch
+### Public Demo Agents sandbox
 
 - A no-sign-in `/demo` sandbox with browser-scoped synthetic data rather than shared credentials or a real demo account.
 - Six provider-neutral, explicitly simulated personas: Echo, Skippy, Codex, Claude, Xiangwei and Spark.
 - Structured, validated proposals; fixed per-agent stream permissions; a human approval checkpoint; and a browser-local demo queue.
 - No external Gmail, memory, credentials, model provider or production-system access.
 - A second Durable Object gate with per-browser daily allowance, global daily budget, start/end window, timeout, concurrency ceiling and a Worker-secret kill switch.
-- Routing, synthetic-input security, permission, approval, limiter and end-to-end coverage. Release status is pending branch verification and controlled deployment.
+- Routing, synthetic-input security, permission, approval, limiter and end-to-end coverage.
+- Live at `/demo` through Worker version `b8b67a3d-82b1-408c-b3c0-d1f78775f92f`. The event window runs from 19 July through 2 August 2026 UTC and has a documented secret kill switch.
 
 ### Authenticated product
 
@@ -99,18 +101,19 @@ The current `main` release changes add provider-aware Google, GitHub and email m
 
 ## Verified quality gates
 
-The 19 July release candidate passed:
+The 19 July production release passed:
 
 - `npm run typecheck`;
 - `npm run lint`;
-- `npm run test`: 18 files, 80 tests;
-- `npm run test:e2e`: 6 Chromium tests;
+- `npm run test`: 20 files, 87 tests;
+- `npm run test:e2e`: 7 Chromium tests;
 - `npm run worker:build`: successful OpenNext Cloudflare bundle;
-- `npx wrangler deploy --dry-run`: successful, with `AGENT_RATE_LIMITER` resolved to the `AgentRateLimiter` Durable Object.
+- `npx wrangler deploy --dry-run`: successful, with `AGENT_RATE_LIMITER` and `DEMO_AGENT_BUDGET` resolved to Durable Objects;
+- live smoke: `/` returns the public landing page, `/demo` produces and approves a synthetic proposal locally, and unauthenticated `/queue` redirects to `/login`.
 
 The Worker build emits a duplicate `options` key warning inside a generated OpenNext dependency bundle. The build completes successfully; no authored DeskOps source contains that duplicate.
 
-Visual QA covered the landing page and the final studio-style login in desktop light, desktop dark, authentication-error, all-provider and phone states. Authenticated production data was not used for visual QA.
+Visual QA covered the landing page, final studio-style login and public Demo Agents route in desktop and phone states. Authenticated production data was not used for visual QA.
 
 ## Production reality
 
@@ -120,28 +123,28 @@ As checked on 19 July 2026:
 - Migration `20260718000001_wellness_assessments` was applied atomically through the Supabase Management API. Verification found one migration-history row, two RLS-enabled Wellness tables, eight policies and two assessment functions.
 - Current Supabase auth settings expose Google only. GitHub and email are disabled pending their external credentials and SMTP configuration.
 - Cloudflare production is account `3aecf1bd75b896c027f3be6a33e7df6b`, Worker `deskops`, with custom domain `deskops.sbs`.
-- The latest existing Worker deployment is version `dd00da08-9705-4347-9e7f-6691fbd154c1`, created 18 July 2026.
-- `https://deskops.sbs/` still returns `307` to `/login`, and the live login remains the old minimal `Sign in to DeskOps` page. Production is not yet serving the newly promoted `main` source.
+- The current Worker deployment is version `b8b67a3d-82b1-408c-b3c0-d1f78775f92f`, deployed 19 July 2026 from `main` release source `d65bf209`.
+- `https://deskops.sbs/` returns the public landing page, `/demo` is public and live, and `/queue` still redirects unauthenticated visitors to `/login`.
 - The Worker has the public Supabase variables but does not have `OPENAI_API_KEY` or `OPENAI_MODEL`. A full AI demo is therefore not configured in production.
 
 ## Release blockers
 
-### P0: configure the production AI boundary
+### P0: configure the authenticated production AI boundary
 
-Set `OPENAI_API_KEY` and `OPENAI_MODEL` through Wrangler's secret workflow without printing or committing them. The additive database migration is already live, so the old Worker remains safe while this final deployment dependency is resolved.
+Set `OPENAI_API_KEY` and `OPENAI_MODEL` through Wrangler's secret workflow without printing or committing them. The public Demo Agents sandbox does not need them, but authenticated AI ticket drafting and Rebalance do.
 
 ### P1: finish public authentication
 
 Create the GitHub OAuth app, store its client ID and secret in Supabase, enable email auth with production SMTP and test both callbacks. The release can technically ship with Google only because unavailable options stay hidden, but the requested three-method demo requires this setup.
 
-### P2: controlled promotion
+### P2: authenticated-flow smoke test
 
 After the AI and authentication gates are ready:
 
-1. rebuild `main` from the promoted release source with the public Supabase variables present;
-2. deploy the Cloudflare Worker and its new `AgentRateLimiter` export;
-3. smoke-test `/`, `/login`, all enabled auth methods, callback routes, `/queue`, demo workspace setup, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
-4. record the deployed Worker version and deployment time here; source control promotion is already complete.
+1. set the authorised Worker secrets and provider credentials;
+2. deploy the resulting `main` revision;
+3. smoke-test all enabled auth methods, callback routes, `/queue`, demo workspace setup, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
+4. record the new Worker version and deployment time here.
 
 ## Known limitations, not blockers for planning
 
@@ -158,7 +161,7 @@ After the AI and authentication gates are ready:
 
 Fabel should help choose and sequence these outcomes rather than treating every historical checkbox as active:
 
-1. **Release-first:** configure the missing Worker model secrets and auth-provider credentials, then deploy and smoke-test the verified redesign and Rebalance flow safely.
+1. **Authenticated-flow completion:** configure the missing Worker model secrets and auth-provider credentials, then smoke-test the verified authenticated AI and Rebalance flow safely.
 2. **Submission-first:** record the demo video and close the live-demo and Devpost evidence gaps around the released product.
 3. **Platform-later:** design the owning-workspace, membership and client-portal model only after the bounded submission work is complete.
 
@@ -182,4 +185,4 @@ Recommended default: release-first, then submission-first. Keep platform work ou
 
 ## Next human action
 
-Add the production OpenAI key through Wrangler's interactive secret workflow and create the GitHub OAuth app and SMTP configuration. No secret should be pasted into chat or committed. Once those three external credentials exist, deploy the promoted `main` source and run the production smoke sequence.
+The public demo is live. Add the production OpenAI key through Wrangler's interactive secret workflow and create the GitHub OAuth app and SMTP configuration. No secret should be pasted into chat or committed. Then deploy the resulting `main` revision and run the authenticated production smoke sequence.
