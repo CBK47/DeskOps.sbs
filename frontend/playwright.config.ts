@@ -18,6 +18,7 @@ export default defineConfig({
     env: {
       ...process.env,
       DEMO_AGENTS_ENABLED: "true",
+      DEMO_AGENT_LIVE_AI: "false",
       DEMO_AGENT_EVENT_START_AT: "2026-07-19T00:00:00.000Z",
       DEMO_AGENT_EVENT_END_AT: "2026-08-02T23:59:59.999Z",
       DEMO_AGENT_USER_DAILY_LIMIT: "12",

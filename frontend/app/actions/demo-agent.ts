@@ -1,15 +1,17 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   createDemoAgentProposal,
   validateDemoAgentInput,
   type DemoAgentProposal,
 } from "@/lib/demo-agents/registry";
+import { draftLiveDemoAgentProposal } from "@/lib/demo-agents/live-proposal";
 import { acquireDemoAgentRequest, withDemoAgentTimeout } from "@/lib/agent/rate-limit";
 
 export type DemoAgentActionResult =
-  | { ok: true; proposal: DemoAgentProposal }
+  | { ok: true; proposal: DemoAgentProposal; mode: "live" | "simulated"; notice?: string }
   | { ok: false; code: "demo_disabled" | "event_not_started" | "event_ended" | "daily_allowance_used" | "global_budget_used" | "too_busy" | "invalid_request"; error: string };
 
 const DEMO_SESSION_COOKIE = "deskops-demo-session";
@@ -22,18 +24,44 @@ export async function draftDemoAgentAction(input: unknown): Promise<DemoAgentAct
   const validated = validateDemoAgentInput(input);
   if (!validated.ok) return { ok: false, code: "invalid_request", error: validated.error };
 
+  if (!liveDemoAiEnabled()) {
+    return { ok: true, proposal: createDemoAgentProposal(validated.value), mode: "simulated" };
+  }
+
   const sessionId = await demoSessionId();
   const lease = await acquireDemoAgentRequest(sessionId);
-  if (!lease.ok) return { ok: false, code: lease.code, error: demoAgentGateMessage(lease.code) };
+  if (!lease.ok) {
+    return {
+      ok: true,
+      proposal: createDemoAgentProposal(validated.value),
+      mode: "simulated",
+      notice: `${demoAgentGateMessage(lease.code)} A simulated draft is shown instead.`,
+    };
+  }
 
   try {
-    const proposal = await withDemoAgentTimeout(Promise.resolve(createDemoAgentProposal(validated.value)), lease.timeoutMs);
-    return { ok: true, proposal };
+    const proposal = await withDemoAgentTimeout(draftLiveDemoAgentProposal(validated.value), lease.timeoutMs);
+    return { ok: true, proposal, mode: "live" };
   } catch {
-    return { ok: false, code: "too_busy", error: "The demo agent did not finish in time. Try again shortly." };
+    return {
+      ok: true,
+      proposal: createDemoAgentProposal(validated.value),
+      mode: "simulated",
+      notice: "Live GPT-5.6 drafting was unavailable, so DeskOps kept the walkthrough moving with a clearly labelled simulated draft.",
+    };
   } finally {
     await lease.release();
   }
+}
+
+function liveDemoAiEnabled() {
+  try {
+    const env = getCloudflareContext().env as Record<string, unknown>;
+    if (typeof env.DEMO_AGENT_LIVE_AI === "string") return env.DEMO_AGENT_LIVE_AI === "true";
+  } catch {
+    // next dev and unit tests do not always expose a Worker request context.
+  }
+  return process.env.DEMO_AGENT_LIVE_AI === "true";
 }
 
 async function demoSessionId() {

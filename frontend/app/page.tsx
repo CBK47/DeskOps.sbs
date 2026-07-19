@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, MoveRight } from "lucide-react";
+import { ArrowRight, Check, GitFork, MoveRight } from "lucide-react";
+import { HeroCaptureMoment } from "@/components/marketing/HeroCaptureMoment";
 import { ProductMoment } from "@/components/marketing/ProductMoment";
+import { RebalanceMoment } from "@/components/marketing/RebalanceMoment";
 import { Reveal } from "@/components/marketing/Reveal";
 import { WELLNESS_DIMENSIONS } from "@/lib/wellness";
 
@@ -36,20 +38,25 @@ export default function LandingPage() {
       <main id="main-content">
         <section className="marketing-hero">
           <div className="hero-grid" aria-hidden />
-          <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28 lg:pt-36">
-            <div className="max-w-4xl animate-hero-in motion-reduce:animate-none">
-              <p className="signal-label">A private life-operations desk</p>
-              <h1 className="mt-5 max-w-4xl text-balance text-5xl font-semibold leading-none sm:text-7xl lg:text-8xl">
-                Clear the noise.<br />Keep the decisions.
-              </h1>
-              <p className="mt-7 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground sm:text-xl">
-                DeskOps turns everything you are carrying into one intelligent queue, then helps you notice what deserves care without deciding for you.
-              </p>
-              <div className="mt-9 flex flex-wrap items-center gap-4">
-                <Link href="/wellness?first=1" className="primary-cta">Start your Wellness Wheel <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-                <Link href="/demo" className="secondary-cta">Explore the synthetic demo</Link>
+          <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28 lg:pt-32">
+            <div className="grid gap-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(24rem,0.72fr)] lg:items-center">
+              <div className="max-w-4xl animate-hero-in motion-reduce:animate-none">
+                <p className="signal-label">A private life-operations desk</p>
+                <h1 className="mt-5 max-w-4xl text-balance text-5xl font-semibold leading-none sm:text-7xl lg:text-8xl">
+                  Clear the noise.<br />Keep the decisions.
+                </h1>
+                <p className="mt-7 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground sm:text-xl">
+                  DeskOps turns everything you are carrying into one intelligent queue, then helps you notice what deserves care without deciding for you.
+                </p>
+                <div className="mt-9 flex flex-wrap items-center gap-4">
+                  <Link href="/wellness?first=1" className="primary-cta">Start your Wellness Wheel <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+                  <Link href="/demo" className="secondary-cta">Try the interactive demo</Link>
+                </div>
+                <p className="mt-5 text-sm text-muted-foreground">Private by default. Skippable by design. AI cannot act without your approval.</p>
               </div>
-              <p className="mt-5 text-sm text-muted-foreground">Private by default. Skippable by design. AI cannot act without your approval.</p>
+              <div className="animate-hero-in-delayed motion-reduce:animate-none">
+                <HeroCaptureMoment />
+              </div>
             </div>
             <div className="mt-16 animate-hero-in-delayed motion-reduce:animate-none sm:mt-24">
               <ProductMoment />
@@ -76,6 +83,19 @@ export default function LandingPage() {
                 <p className="mt-8 max-w-2xl text-pretty leading-7 text-muted-foreground">Capture messy inputs. Let AI propose structure. Review every meaningful field. Keep the final decision human.</p>
               </div>
             </div>
+          </Reveal>
+        </section>
+
+        <section className="border-y border-border/70 bg-card/30">
+          <Reveal className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:px-8 sm:py-32 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+            <div>
+              <p className="signal-label">Capture. Reflect. Rebalance.</p>
+              <h2 className="mt-4 text-balance text-4xl font-semibold leading-tight sm:text-6xl">Every productivity app makes you busier.</h2>
+              <p className="mt-6 max-w-xl text-pretty text-lg leading-8 text-foreground">DeskOps suggests when to stop and rebalance.</p>
+              <p className="mt-5 max-w-xl text-pretty leading-7 text-muted-foreground">The rules choose the largest tracked gap. AI may draft one gentle step. You can edit it, add it, or decide that now is not the time.</p>
+              <Link href="/demo/wellness" className="text-link mt-6">Try Rebalance with sample history <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+            </div>
+            <RebalanceMoment />
           </Reveal>
         </section>
 
@@ -167,7 +187,7 @@ export default function LandingPage() {
             <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">You can skip every question, change focus later, and keep untracked dimensions out of the maths.</p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href="/wellness?first=1" className="primary-cta">Start your Wellness Wheel <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-              <Link href="/demo" className="secondary-cta">Explore the synthetic demo</Link>
+              <Link href="/demo" className="secondary-cta">Try the interactive demo</Link>
             </div>
           </Reveal>
         </section>
@@ -179,7 +199,7 @@ export default function LandingPage() {
           <nav className="flex flex-wrap gap-5" aria-label="Legal and project links">
             <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
             <Link href="/terms" className="hover:text-foreground">Terms</Link>
-            <a href="https://github.com/CBK47/DeskOps.sbs" target="_blank" rel="noreferrer" className="hover:text-foreground">Source code</a>
+            <a href="https://github.com/CBK47/DeskOps.sbs" target="_blank" rel="noreferrer" className="secondary-cta min-h-10 gap-2 px-3 py-2"><GitFork className="h-4 w-4" aria-hidden /> GitHub repository</a>
           </nav>
         </div>
       </footer>

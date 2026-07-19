@@ -30,6 +30,8 @@ Use the [public first-session demo](https://deskops.sbs/demo) without signing in
 
 The hosted version runs in CBK's Supabase and Cloudflare tenancy. Light, good-faith evaluation is welcome while it remains within the project's free hosting allowances. Treat it as a best-effort preview rather than a service with an uptime or data-retention guarantee, and do not enter sensitive, confidential or irreplaceable information. The public demo is the safest way to explore: it uses synthetic data, simulated agents and browser-local state.
 
+**For Build Week judges:** the interactive demo needs no account. An email magic link opens an isolated workspace with the private queue and complete Rebalance flow. Live GPT-5.6 drafting is an optional server-side capability and appears only when the hosted workspace has an OpenAI key configured.
+
 ### 2. Run it privately on one computer
 
 The quickest self-hosted option runs DeskOps, its database, authentication and a login-email inbox on your own computer. It does not require a Supabase account or project:

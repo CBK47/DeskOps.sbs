@@ -35,6 +35,7 @@ type DemoTicket = {
   priority: "low" | "medium" | "high" | "urgent";
   source: "you" | "agent";
   agentId?: DemoAgentId;
+  draftMode?: "live" | "simulated";
 };
 
 type DemoStep = "streams" | "capture" | "assist";
@@ -79,6 +80,7 @@ export function DemoWorkspace() {
   const [prompt, setPrompt] = useState("");
   const [conversation, setConversation] = useState<DemoConversationMessage[]>([]);
   const [proposal, setProposal] = useState<DemoAgentProposal | null>(null);
+  const [proposalMode, setProposalMode] = useState<"live" | "simulated">("simulated");
   const [demoQueue, setDemoQueue] = useState<DemoTicket[]>([]);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -101,6 +103,7 @@ export function DemoWorkspace() {
     const nextOptions = DEMO_AGENT_IDS.filter((id) => DEMO_AGENT_REGISTRY[id].allowedStreamIds.includes(nextStreamId));
     if (!nextOptions.includes(agentId)) setAgentId(nextOptions[0] ?? "echo");
     setProposal(null);
+    setProposalMode("simulated");
     setConversation([]);
     setFeedback(null);
   }
@@ -108,6 +111,7 @@ export function DemoWorkspace() {
   function selectAgent(nextAgentId: DemoAgentId) {
     setAgentId(nextAgentId);
     setProposal(null);
+    setProposalMode("simulated");
     setConversation([]);
     setFeedback(null);
   }
@@ -199,6 +203,7 @@ export function DemoWorkspace() {
         return;
       }
       setProposal(result.proposal);
+      setProposalMode(result.mode);
       setConversation((messages) => [
         ...messages,
         {
@@ -209,18 +214,19 @@ export function DemoWorkspace() {
         },
       ]);
       setPrompt("");
-      setFeedback(`${selectedAgent.name} prepared a reviewable draft. Nothing has been added to the queue.`);
+      setFeedback(result.notice ?? `${selectedAgent.name} prepared a ${result.mode === "live" ? "live GPT-5.6" : "simulated"} reviewable draft. Nothing has been added to the queue.`);
     });
   }
 
   function approveProposal() {
     if (!proposal) return;
     setDemoQueue((tickets) => [
-      { title: proposal.title, streamId: proposal.streamId, priority: proposal.priority, source: "agent", agentId: proposal.agentId },
+      { title: proposal.title, streamId: proposal.streamId, priority: proposal.priority, source: "agent", agentId: proposal.agentId, draftMode: proposalMode },
       ...tickets,
     ]);
     setFeedback("Added to this browser's synthetic demo queue. Nothing was saved to a real account.");
     setProposal(null);
+    setProposalMode("simulated");
   }
 
   function resetDemo() {
@@ -234,6 +240,7 @@ export function DemoWorkspace() {
     setPrompt("");
     setConversation([]);
     setProposal(null);
+    setProposalMode("simulated");
     setDemoQueue([]);
     setFeedback("Demo reset. Nothing from this browser session was saved.");
   }
@@ -526,7 +533,7 @@ export function DemoWorkspace() {
                   <p className="signal-label">Approval checkpoint</p>
                   <h2 id="proposal-title" className="mt-2 text-xl font-semibold">Nothing enters the queue by itself.</h2>
                 </div>
-                <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"><LockKeyhole className="h-3.5 w-3.5" aria-hidden /> Draft only</span>
+                <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"><LockKeyhole className="h-3.5 w-3.5" aria-hidden /> {proposalMode === "live" ? "Live GPT-5.6 draft" : "Simulated demo draft"}</span>
               </div>
               <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -538,7 +545,7 @@ export function DemoWorkspace() {
               <p className="mt-5 border-t border-border/70 pt-5 text-sm leading-6 text-muted-foreground">{proposal.rationale}</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button type="button" className="min-h-11" onClick={approveProposal}><CheckCircle2 className="h-4 w-4" aria-hidden /> Add to demo queue</Button>
-                <Button type="button" variant="ghost" className="min-h-11" onClick={() => { setProposal(null); setFeedback("Draft dismissed. The synthetic queue is unchanged."); }}><X className="h-4 w-4" aria-hidden /> Dismiss draft</Button>
+                <Button type="button" variant="ghost" className="min-h-11" onClick={() => { setProposal(null); setProposalMode("simulated"); setFeedback("Draft dismissed. The synthetic queue is unchanged."); }}><X className="h-4 w-4" aria-hidden /> Dismiss draft</Button>
               </div>
             </section>
           )}
@@ -558,7 +565,7 @@ export function DemoWorkspace() {
                     <div>
                       <p className="font-medium">{ticket.title}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {ticket.source === "you" ? "You captured this" : `${ticket.agentId ? DEMO_AGENT_REGISTRY[ticket.agentId].name : "Demo Agent"} · simulated proposal`}
+                        {ticket.source === "you" ? "You captured this" : `${ticket.agentId ? DEMO_AGENT_REGISTRY[ticket.agentId].name : "Demo Agent"} · ${ticket.draftMode === "live" ? "live GPT-5.6 draft" : "simulated proposal"}`}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Bot } from "lucide-react";
 import { AgentAccessGuide } from "@/components/agent/AgentAccessGuide";
+import { DemoFooter } from "@/components/demo/DemoFooter";
 import { DemoHeader } from "@/components/demo/DemoHeader";
 import { DEMO_AGENT_IDS, DEMO_AGENT_REGISTRY, DEMO_STREAMS } from "@/lib/demo-agents/registry";
 
@@ -25,6 +26,7 @@ export default function DemoAgentsPage() {
             <div>
               <p className="signal-label">Simulated roster</p>
               <h2 id="demo-agent-roster-title" className="mt-1 text-xl font-semibold">Six examples of scoped operators.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">These examples mirror the author&apos;s real home-agent fleet, presented here with simulated tools and synthetic data.</p>
             </div>
             <span className="font-mono text-xs tabular-nums text-muted-foreground">{DEMO_AGENT_IDS.length} profiles</span>
           </div>
@@ -51,6 +53,7 @@ export default function DemoAgentsPage() {
           </div>
         </section>
       </div>
+      <DemoFooter />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DemoHeader } from "@/components/demo/DemoHeader";
+import { DemoFooter } from "@/components/demo/DemoFooter";
 import { DemoWorkspace } from "@/components/demo/DemoWorkspace";
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function DemoPage() {
       <div id="demo-main" className="mx-auto mt-10 max-w-7xl px-4 sm:mt-14 sm:px-6">
         <DemoWorkspace />
       </div>
+      <DemoFooter />
     </main>
   );
 }
