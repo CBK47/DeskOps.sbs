@@ -6,7 +6,7 @@ import { QuickAddDialog } from "@/components/ticket/QuickAddDialog";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { NavLink } from "@/components/app/NavLink";
 import { listStreams } from "@/lib/db/streams";
-import { CircleUserRound, ListTodo, Radar, Rows3, Workflow } from "lucide-react";
+import { Bot, CircleUserRound, ListTodo, Radar, Rows3, Workflow } from "lucide-react";
 
 async function signOut() {
   "use server";
@@ -41,6 +41,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
             <NavLink href="/queue"><ListTodo className="h-4 w-4" aria-hidden /> Queue</NavLink>
             <NavLink href="/wellness"><Radar className="h-4 w-4" aria-hidden /> Wellness</NavLink>
             <NavLink href="/streams"><Rows3 className="h-4 w-4" aria-hidden /> Streams</NavLink>
+            <NavLink href="/agents"><Bot className="h-4 w-4" aria-hidden /> Agents</NavLink>
           </nav>
           <div className="flex items-center gap-1">
             <span className="hidden max-w-48 truncate rounded-md border border-border/70 px-2 py-1 font-mono text-[11px] text-muted-foreground lg:block" title={user?.email ?? undefined}>
@@ -59,6 +60,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <NavLink href="/queue"><ListTodo className="h-5 w-5" aria-hidden /><span>Queue</span></NavLink>
         <NavLink href="/wellness"><Radar className="h-5 w-5" aria-hidden /><span>Wellness</span></NavLink>
         <NavLink href="/streams"><Workflow className="h-5 w-5" aria-hidden /><span>Streams</span></NavLink>
+        <NavLink href="/agents"><Bot className="h-5 w-5" aria-hidden /><span>Agents</span></NavLink>
       </nav>
       <QuickAddDialog streams={streamsLite} />
     </div>

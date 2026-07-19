@@ -17,6 +17,7 @@
     "test": "npm --workspace @deskops/frontend run test",
     "test:watch": "npm --workspace @deskops/frontend run test:watch",
     "test:e2e": "npm --workspace @deskops/frontend run test:e2e",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run worker:build && npm run test:e2e",
     "gen:types": "npm --workspace @deskops/frontend run gen:types",
     "worker:build": "npm --workspace @deskops/frontend run worker:build",
     "worker:preview": "npm --workspace @deskops/frontend run worker:preview",

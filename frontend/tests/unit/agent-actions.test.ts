@@ -99,7 +99,7 @@ describe("AI action boundaries", () => {
     await expect(polishInvoiceAction({ line_items: [], total_pence: 0, summary: "" })).resolves.toEqual({
       ok: false,
       code: "rate_limited",
-      error: "Busy moment — try again shortly.",
+      error: "Busy moment. Try again shortly.",
     });
     expect(mocks.responsesCreate).toHaveBeenCalledTimes(AGENT_REQUEST_LIMIT);
   });
@@ -132,7 +132,7 @@ describe("AI action boundaries", () => {
     await expect(draftTicketAction("renew the van insurance")).resolves.toEqual({
       ok: false,
       code: "temporarily_unavailable",
-      error: "Busy moment — try again shortly.",
+      error: "Busy moment. Try again shortly.",
     });
   });
 

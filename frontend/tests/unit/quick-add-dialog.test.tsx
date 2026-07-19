@@ -81,8 +81,8 @@ describe("QuickAddDialog", () => {
     fireEvent.change(naturalLanguage, { target: { value: "renew the van insurance next Friday" } });
     fireEvent.click(screen.getByRole("button", { name: "Draft" }));
 
-    await screen.findByText("I've drafted this — you decide.");
-    expect(screen.getByText("Drafted for you — edit or add.")).toBeInTheDocument();
+    await screen.findByText("I've drafted this. You decide.");
+    expect(screen.getByText("Drafted for you. Edit or add.")).toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Add ticket" }).filter((button) => button.getAttribute("type") === "submit")).toHaveLength(1);
 
@@ -96,7 +96,7 @@ describe("QuickAddDialog", () => {
     draftTicketAction.mockResolvedValueOnce({
       ok: false,
       code: "rate_limited",
-      error: "Busy moment — try again shortly.",
+      error: "Busy moment. Try again shortly.",
     });
 
     render(<QuickAddDialog streams={[{ id: "stream-home", name: "Home" }]} />);
@@ -104,7 +104,7 @@ describe("QuickAddDialog", () => {
     fireEvent.change(screen.getByLabelText("Describe it naturally"), { target: { value: "renew the van insurance" } });
     fireEvent.click(screen.getByRole("button", { name: "Draft" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment — try again shortly.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment. Try again shortly.");
     expect(toastError).not.toHaveBeenCalled();
   });
 });

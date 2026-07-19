@@ -15,7 +15,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Priority, due-date, status, recurrence, and stream filters
 - Recurring tickets that retain their monthly or yearly anchor date
 - Google, GitHub and email magic-link sign-in with per-user data isolation and row-level security
-- Installable PWA with light and dark themes
+- Installable web-app metadata with light and dark themes
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
 - A public `/demo` sandbox with six clearly simulated agents, synthetic streams and browser-local approval
@@ -124,6 +124,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run Vitest unit tests |
 | `npm run test:e2e` | Run Playwright end-to-end tests |
+| `npm run verify` | Run the complete local release gate |
 | `npm run build` | Create a production build |
 | `npm run worker:build` | Build the Cloudflare Worker with OpenNext |
 | `npm run worker:preview` | Build and preview the Worker locally |
@@ -132,7 +133,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 
 ## Architecture
 
-- `frontend/` contains the complete Next.js application, tests, PWA assets, and Cloudflare configuration.
+- `frontend/` contains the complete Next.js application, tests, installable web-app metadata, and Cloudflare configuration.
 - `frontend/app/(app)/` contains authenticated product routes.
 - `frontend/app/(auth)/` contains sign-in and callback routes.
 - `frontend/app/actions/` holds server actions for tickets and streams.
@@ -142,7 +143,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 - `supabase/migrations/` is the source of truth for the database schema.
 - `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
 
-The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See [docs/PERSONAL.md](docs/PERSONAL.md) before adding local personal data.
+The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the public system map and [docs/PERSONAL.md](docs/PERSONAL.md) before adding local personal data.
 
 ## OpenAI configuration
 
@@ -156,7 +157,7 @@ Production AI calls are limited per authenticated user through a SQLite-backed C
 
 `/demo` is a no-sign-in, synthetic sandbox for Build Week reviewers. It does not use a shared account, Supabase data, external tools, credentials or a live model provider. Six named roles are provider-neutral simulated personas, and every proposal requires an explicit local approval before it enters the browser-only queue.
 
-The public demo has a separate global Durable Object budget, event window, per-browser daily allowance, concurrency ceiling, timeout and kill switch. See [the demo-agent runbook](docs/DEMO-AGENTS.md) before enabling, deploying or disabling it.
+The public demo has a separate global Durable Object budget, event window, per-browser daily allowance, concurrency ceiling, timeout and kill switch. Its operational runbook is intentionally maintained privately.
 
 ## Build Week build
 
@@ -169,7 +170,7 @@ The demo focuses on this end-to-end flow:
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.
 
-See [HACKATHON.md](HACKATHON.md) for the Build Week scope, prior-work boundary, and submission checklist.
+See [HACKATHON.md](HACKATHON.md) for the Build Week scope and prior-work boundary.
 
 ## Built with Codex
 
@@ -177,7 +178,7 @@ DeskOps is created by CBK47 with OpenAI Codex and GPT-5.6 for OpenAI Build Week.
 
 The dated evidence boundary is explicit: `5e6ed8d` is the sanitised import of the pre-existing DeskOps MVP on 16 July 2026. Submission-period work begins with `d840cc2` and every later commit. On 18 July 2026, a bounded Codex improvement loop added the AI action gate (`1b87a61`), made invoice tooling personal-only (`bf816ef`), reduced AI tickets to one human decision (`f8bc359`), and delivered Rebalance V1 (`fbff318`). Each task passed the full test and Worker-build gates before it was pushed.
 
-This public repository rebuild was completed in Codex session `019f6cac-1f8d-7111-a538-a0f0171070d5`. See [HACKATHON.md](HACKATHON.md) for the submission record and [docs/REBUILD.md](docs/REBUILD.md) for the repository arrangement.
+The public repository preserves the sanitised prior-work boundary and source history. Internal release records, deployment details and working plans are deliberately maintained outside the public repository.
 
 Ideas, issue reports, and early contributors are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 

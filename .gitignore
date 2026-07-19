@@ -56,3 +56,6 @@ next-env.d.ts
 
 # local-only personal customisations
 /personal/
+
+# local-only plans, operating records, and release runbooks
+/private/

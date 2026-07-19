@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { createTicketSafe } from "@/app/actions/tickets";
 import { PRIORITY_ITEMS, RECURRENCE_ITEMS } from "@/lib/ticket-options";
 import { draftTicketAction } from "@/app/actions/agent";
+import { AGENT_BUSY_MESSAGE } from "@/lib/agent/draft-error";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -60,7 +61,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       try {
         result = await draftTicketAction(naturalLanguage);
       } catch {
-        setAiDraftError("Busy moment — try again shortly.");
+        setAiDraftError(AGENT_BUSY_MESSAGE);
         return;
       }
       if (!result.ok) {
@@ -78,7 +79,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       setRecurrence(result.draft.recurrence);
       setNotes(result.draft.notes);
       setDraftedByAi(true);
-      toast.success("Drafted for you — edit or add");
+      toast.success("Drafted for you. Edit or add");
     });
   }
 
@@ -163,8 +164,8 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
 
           {draftedByAi && (
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-3" role="status">
-              <p className="text-sm font-medium">I&apos;ve drafted this — you decide.</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">Drafted for you — edit or add.</p>
+              <p className="text-sm font-medium">I&apos;ve drafted this. You decide.</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">Drafted for you. Edit or add.</p>
             </div>
           )}
 

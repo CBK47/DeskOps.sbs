@@ -74,7 +74,7 @@ describe("RebalanceCard", () => {
 
   it("offers a working retry after a calm transient failure", async () => {
     mocks.draftRebalanceAction
-      .mockResolvedValueOnce({ ok: false, code: "temporarily_unavailable", error: "Busy moment — try again shortly." })
+      .mockResolvedValueOnce({ ok: false, code: "temporarily_unavailable", error: "Busy moment. Try again shortly." })
       .mockResolvedValueOnce({
         ok: true,
         dimension: "physical",
@@ -88,7 +88,7 @@ describe("RebalanceCard", () => {
 
     render(<RebalanceCard assessmentId="assessment-retry" selection={selection} streams={[stream]} />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment — try again shortly.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment. Try again shortly.");
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
     expect(await screen.findByText("Take a ten-minute walk")).toBeInTheDocument();

@@ -1,7 +1,16 @@
-import type { WellnessAssessmentWithEntries } from "@/lib/db/wellness";
 import { WELLNESS_DIMENSIONS } from "@/lib/wellness";
 
-export function WellnessHistory({ assessments }: { assessments: WellnessAssessmentWithEntries[] }) {
+export type WellnessHistoryAssessment = {
+  id: string;
+  created_at: string;
+  entries: Array<{
+    dimension: string;
+    current_rating: number | null;
+    focus_state: string;
+  }>;
+};
+
+export function WellnessHistory({ assessments }: { assessments: readonly WellnessHistoryAssessment[] }) {
   if (assessments.length < 2) return null;
 
   return (

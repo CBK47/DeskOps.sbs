@@ -58,12 +58,6 @@ Every completed task passed TypeScript, ESLint, the full Vitest suite, Playwrigh
 - Shared household/client workspaces and multi-user permissions
 - Recurrence intelligence
 
-## Submission checklist
+## Public submission record
 
-- [x] Record the Codex rebuild session ID: `019f6cac-1f8d-7111-a538-a0f0171070d5`
-- [x] Publish the public source repository as `CBK47/DeskOps.sbs`.
-- [ ] Add a public demo video under three minutes.
-- [ ] Configure `OPENAI_API_KEY` and `OPENAI_MODEL` as Cloudflare Worker secrets.
-- [ ] Apply the Supabase migrations and seed only generic demo data.
-- [ ] Verify the deployed Google sign-in, Wheel, and AI draft.
-- [ ] Follow [the controlled release checklist](docs/RELEASE-CHECKLIST.md) and record the release commit.
+This document records only the Build Week scope and dated code boundary. Submission working plans, release checklists, deployment records, and credentials are intentionally maintained outside the public repository.

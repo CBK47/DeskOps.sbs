@@ -200,7 +200,7 @@ export default function LoginPage() {
             )}
 
             <p id="login-agency-note" className="mt-5 text-xs leading-5 text-muted-foreground">
-              These options confirm your identity only. DeskOps does not ask for repository, Gmail, Calendar or Drive access.
+              These options confirm your identity only. DeskOps does not request repository, Gmail, Calendar, Drive or other service access by default. You can connect services through an agent you configure, when you choose.
             </p>
             <p id="login-email-note" className="mt-2 text-xs leading-5 text-muted-foreground">
               New here? Sign in, then choose <span className="text-foreground">Set up demo workspace</span> for private sample data.

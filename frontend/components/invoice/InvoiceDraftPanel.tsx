@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { polishInvoiceAction } from "@/app/actions/agent";
 import type { InvoiceDraft } from "@/lib/agent/draftInvoice";
+import { AGENT_BUSY_MESSAGE } from "@/lib/agent/draft-error";
 
 export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
   const [summary, setSummary] = useState(draft.summary);
@@ -25,7 +26,7 @@ export function InvoiceDraftPanel({ draft }: { draft: InvoiceDraft }) {
           line_items: draft.line_items.map((item) => ({ ...item, description: descriptions[item.ticket_id] ?? item.description })),
         });
       } catch {
-        setPolishError("Busy moment — try again shortly.");
+        setPolishError(AGENT_BUSY_MESSAGE);
         return;
       }
       if (!result.ok) {

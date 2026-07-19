@@ -4,7 +4,7 @@ const ACTIONABLE_DRAFT_ERRORS = new Set([
   "Keep the AI draft request to 1,200 characters or fewer.",
 ]);
 
-export const AGENT_BUSY_MESSAGE = "Busy moment — try again shortly.";
+export const AGENT_BUSY_MESSAGE = "Busy moment. Try again shortly.";
 
 export function ticketDraftErrorMessage(error: unknown) {
   if (error instanceof Error) {

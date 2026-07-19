@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { RebalanceSelection, RebalanceTicketDraft } from "@/lib/rebalance";
+import { AGENT_BUSY_MESSAGE } from "@/lib/agent/draft-error";
 import { toast } from "sonner";
 
 type RebalanceStream = { id: string; name: string };
@@ -52,7 +53,7 @@ export function RebalanceCard({
       })
       .catch(() => {
         rebalanceDraftRequests.delete(assessmentId);
-        setError("Busy moment — try again shortly.");
+        setError(AGENT_BUSY_MESSAGE);
       })
       .finally(() => setLoading(false));
   }, [assessmentId, storageKey]);
@@ -119,7 +120,7 @@ export function RebalanceCard({
         <div className="min-w-0 flex-1">
           <p className="signal-label">One thing to rebalance</p>
           <h2 id="rebalance-title" className="mt-2 text-xl font-semibold">{selection.label}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">I&apos;ve drafted one small step — you decide.</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">I&apos;ve drafted one small step. You decide.</p>
 
           {loading && <p className="mt-5 text-sm text-muted-foreground" role="status">Drafting one gentle next step…</p>}
           {error && <p className="mt-5 text-sm text-muted-foreground" role="alert">{error}</p>}
