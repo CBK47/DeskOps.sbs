@@ -69,7 +69,7 @@ export function wheelFilterHref(streamIds: readonly string[]): string | null {
   if (!streamIds.length) return null;
   const params = new URLSearchParams();
   streamIds.forEach((id) => params.append("stream", id));
-  return `/?${params.toString()}`;
+  return `/queue?${params.toString()}`;
 }
 
 function isOverdue(dueDate: string | null, todayInLondon: string): boolean {

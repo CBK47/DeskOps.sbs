@@ -10,7 +10,7 @@ DeskOps is for individuals balancing personal administration across health, fami
 
 ## Product Purpose
 
-DeskOps turns unstructured life admin into an intelligent, reviewable queue. It makes imbalance visible through a live Wheel of Life and keeps people in control by letting AI agents draft, rather than silently execute, every meaningful action.
+DeskOps turns unstructured life admin into an intelligent, reviewable queue. Its private, optional Wellness Wheel helps people reflect across eight Dimensions of Wellness while keeping ratings separate from priorities. AI agents draft rather than silently execute every meaningful action.
 
 ## Brand Personality
 
@@ -23,11 +23,11 @@ Avoid productivity-guilt mechanics, gamified wellbeing apps, noisy enterprise da
 ## Design Principles
 
 1. One clear next action beats an overwhelming list.
-2. Make life balance visible, not abstract.
+2. Make reflection visible without turning it into a scorecard.
 3. AI proposes; the person decides.
 4. Bring operational clarity to personal life without corporate theatre.
 5. Keep sensitive life context private, legible, and easy to correct.
 
 ## Accessibility & Inclusion
 
-Target WCAG AA. The Wheel must never be colour-only: provide text labels and numeric values. Respect reduced-motion preferences and use UK English throughout.
+Target WCAG AA. The Wellness Wheel must never be colour-only: provide text labels and numeric values, and show an untracked dimension as untracked rather than zero. Respect reduced-motion preferences and use UK English throughout.

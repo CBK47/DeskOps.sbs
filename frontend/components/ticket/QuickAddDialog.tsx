@@ -1,6 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { createTicketSafe } from "@/app/actions/tickets";
 import { PRIORITY_ITEMS, RECURRENCE_ITEMS } from "@/lib/ticket-options";
 import { draftTicketAction } from "@/app/actions/agent";
 import { Sparkles } from "lucide-react";
+import Link from "next/link";
 
 type StreamLite = { id: string; name: string };
 
@@ -20,6 +21,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [pending, startSubmitTransition] = useTransition();
   const [drafting, startDraftTransition] = useTransition();
   const router = useRouter();
+  const pathname = usePathname();
   const [naturalLanguage, setNaturalLanguage] = useState("");
   const [title, setTitle] = useState("");
   const [streamId, setStreamId] = useState(streams[0]?.id ?? "");
@@ -28,12 +30,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   const [recurrence, setRecurrence] = useState("none");
   const [notes, setNotes] = useState("");
   const [draftedByAi, setDraftedByAi] = useState(false);
-  const [reviewedAiDraft, setReviewedAiDraft] = useState(false);
-  const [draftSourceText, setDraftSourceText] = useState("");
-
-  const trimmedNaturalLanguage = naturalLanguage.trim();
-  const aiDraftNeedsRefresh = draftedByAi && trimmedNaturalLanguage !== draftSourceText;
-  const aiReviewMessage = getAiReviewMessage(aiDraftNeedsRefresh, reviewedAiDraft);
+  const [aiDraftError, setAiDraftError] = useState("");
 
   function resetForm() {
     setNaturalLanguage("");
@@ -44,24 +41,12 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     setRecurrence("none");
     setNotes("");
     setDraftedByAi(false);
-    setReviewedAiDraft(false);
-    setDraftSourceText("");
+    setAiDraftError("");
   }
 
   function onOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) resetForm();
-  }
-
-  function requireFreshAiReview() {
-    if (draftedByAi) setReviewedAiDraft(false);
-  }
-
-  function onNaturalLanguageChange(value: string) {
-    setNaturalLanguage(value);
-    if (draftedByAi && value.trim() !== draftSourceText) {
-      setReviewedAiDraft(false);
-    }
   }
 
   function handleNaturalLanguageDraft() {
@@ -70,15 +55,20 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       return;
     }
     startDraftTransition(async () => {
+      setAiDraftError("");
       let result: Awaited<ReturnType<typeof draftTicketAction>>;
       try {
         result = await draftTicketAction(naturalLanguage);
       } catch {
-        toast.error("DeskOps could not draft a ticket. Please try again.");
+        setAiDraftError("Busy moment — try again shortly.");
         return;
       }
       if (!result.ok) {
-        toast.error(result.error);
+        if (result.code === "rate_limited" || result.code === "temporarily_unavailable") {
+          setAiDraftError(result.error);
+        } else {
+          toast.error(result.error);
+        }
         return;
       }
       setTitle(result.draft.title);
@@ -88,9 +78,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
       setRecurrence(result.draft.recurrence);
       setNotes(result.draft.notes);
       setDraftedByAi(true);
-      setReviewedAiDraft(false);
-      setDraftSourceText(trimmedNaturalLanguage);
-      toast.success("Ticket draft ready to review");
+      toast.success("Drafted for you — edit or add");
     });
   }
 
@@ -100,14 +88,6 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
   // insert partially succeeded before an error.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (aiDraftNeedsRefresh) {
-      toast.error("Redraft the AI ticket after changing the description.");
-      return;
-    }
-    if (draftedByAi && !reviewedAiDraft) {
-      toast.error("Review and confirm the AI draft before adding the ticket.");
-      return;
-    }
     const formData = new FormData(e.currentTarget);
     startSubmitTransition(async () => {
       // A stale Server Action reference (e.g. this tab loaded before a
@@ -134,19 +114,30 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
     });
   }
 
+  if (pathname.startsWith("/wellness")) return null;
+
   return (
     <>
       <Button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Add ticket"
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none"
+        className="fixed bottom-24 right-5 z-40 h-14 w-14 rounded-full p-0 text-2xl leading-none shadow-lg transition-[transform,box-shadow,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 motion-reduce:transform-none sm:bottom-6 sm:right-6"
       >
         +
       </Button>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
         <DialogTitle>New ticket</DialogTitle>
+
+        {streams.length === 0 ? (
+          <div className="py-5 text-center">
+            <span className="empty-state-icon mx-auto">+</span>
+            <p className="mt-4 font-semibold">Create a stream first</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Streams give each ticket a clear home. You can keep the structure as simple as you like.</p>
+            <Link href="/streams" className="primary-cta mt-6" onClick={() => setOpen(false)}>Set up a stream</Link>
+          </div>
+        ) : (
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="rounded-lg border bg-secondary/40 p-3">
@@ -158,7 +149,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Input
                 id="natural-language"
                 value={naturalLanguage}
-                onChange={(event) => onNaturalLanguageChange(event.target.value)}
+                onChange={(event) => setNaturalLanguage(event.target.value)}
                 maxLength={1200}
                 placeholder="e.g. renew the van insurance next Friday"
               />
@@ -167,26 +158,13 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               </Button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">DeskOps will pre-fill a draft for you to check before it is added.</p>
+            {aiDraftError && <p className="mt-2 text-xs text-muted-foreground" role="alert">{aiDraftError}</p>}
           </div>
 
           {draftedByAi && (
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-3" role="status">
-              <p className="text-sm font-medium">AI draft ready for your review</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">Check every field before confirming. AI cannot add this ticket for you.</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground" aria-live="polite">
-                {aiReviewMessage}
-              </p>
-              <label htmlFor="review-ai-draft" className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
-                <input
-                  id="review-ai-draft"
-                  type="checkbox"
-                  checked={reviewedAiDraft}
-                  onChange={(event) => setReviewedAiDraft(event.target.checked)}
-                  disabled={aiDraftNeedsRefresh}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-                <span>I have reviewed this AI draft.</span>
-              </label>
+              <p className="text-sm font-medium">I&apos;ve drafted this — you decide.</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">Drafted for you — edit or add.</p>
             </div>
           )}
 
@@ -196,29 +174,24 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               id="title"
               name="title"
               value={title}
-              onChange={(event) => {
-                requireFreshAiReview();
-                setTitle(event.target.value);
-              }}
+              maxLength={160}
+              onChange={(event) => setTitle(event.target.value)}
               required
               autoFocus
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Stream</Label>
+              <Label htmlFor="quick-stream">Stream</Label>
               <Select
                 name="stream_id"
                 required
                 value={streamId}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setStreamId(value ?? "");
-                }}
+                onValueChange={(value) => setStreamId(value ?? "")}
                 items={streams.map((s) => ({ value: s.id, label: s.name }))}
               >
-                <SelectTrigger><SelectValue placeholder="Pick a stream" /></SelectTrigger>
+                <SelectTrigger id="quick-stream" className="w-full"><SelectValue placeholder="Pick a stream" /></SelectTrigger>
                 <SelectContent>
                   {streams.map((s) => (
                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -231,13 +204,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Select
                 name="priority"
                 value={priority}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setPriority(value ?? "medium");
-                }}
+                onValueChange={(value) => setPriority(value ?? "medium")}
                 items={PRIORITY_ITEMS}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="priority" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
@@ -248,7 +218,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="due_date">Due date</Label>
               <Input
@@ -256,10 +226,7 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
                 name="due_date"
                 type="date"
                 value={dueDate}
-                onChange={(event) => {
-                  requireFreshAiReview();
-                  setDueDate(event.target.value);
-                }}
+                onChange={(event) => setDueDate(event.target.value)}
               />
             </div>
             <div className="space-y-1.5">
@@ -267,13 +234,10 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               <Select
                 name="recurrence"
                 value={recurrence}
-                onValueChange={(value) => {
-                  requireFreshAiReview();
-                  setRecurrence(value ?? "none");
-                }}
+                onValueChange={(value) => setRecurrence(value ?? "none")}
                 items={RECURRENCE_ITEMS}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="recurrence" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="daily">Daily</SelectItem>
@@ -291,28 +255,21 @@ export function QuickAddDialog({ streams }: { streams: StreamLite[] }) {
               id="notes"
               name="notes"
               rows={4}
+              maxLength={1200}
               value={notes}
-              onChange={(event) => {
-                requireFreshAiReview();
-                setNotes(event.target.value);
-              }}
+              onChange={(event) => setNotes(event.target.value)}
             />
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={pending || aiDraftNeedsRefresh || (draftedByAi && !reviewedAiDraft)}>
-              {pending ? "Adding…" : draftedByAi ? "Confirm and add ticket" : "Add ticket"}
+            <Button type="submit" disabled={pending}>
+              {pending ? "Adding…" : "Add ticket"}
             </Button>
           </div>
         </form>
+        )}
       </DialogContent>
       </Dialog>
     </>
   );
-}
-
-function getAiReviewMessage(needsRefresh: boolean, reviewed: boolean) {
-  if (needsRefresh) return "The description changed after this draft was generated. Redraft before adding the ticket.";
-  if (reviewed) return "Review confirmed for these fields.";
-  return "Any change requires you to confirm your review again.";
 }

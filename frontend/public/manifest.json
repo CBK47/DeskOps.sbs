@@ -1,7 +1,7 @@
 {
   "name": "DeskOps",
   "short_name": "DeskOps",
-  "description": "Personal ITSM + LifeOps",
+  "description": "One calm, reviewable queue for the work of real life",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

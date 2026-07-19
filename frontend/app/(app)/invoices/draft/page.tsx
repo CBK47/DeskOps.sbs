@@ -6,12 +6,16 @@ import { InvoiceDraftPanel } from "@/components/invoice/InvoiceDraftPanel";
 import { buildInvoiceDraft, parseHourlyRate } from "@/lib/agent/draftInvoice";
 import { getStream } from "@/lib/db/streams";
 import { listCompletedTicketsForStream } from "@/lib/db/tickets";
+import { isInvoiceFeatureEnabled } from "@/lib/features";
+import Link from "next/link";
 
 export default async function InvoiceDraftPage({
   searchParams,
 }: {
   searchParams: Promise<{ stream?: string; rate?: string }>;
 }) {
+  if (!isInvoiceFeatureEnabled()) notFound();
+
   const { stream: streamId, rate } = await searchParams;
   if (!streamId) notFound();
 
@@ -24,10 +28,11 @@ export default async function InvoiceDraftPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border/70 pb-6">
         <div>
+          <Link href="/streams" className="text-link">← Back to streams</Link>
           <p className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">{stream.name}</p>
-          <h1 className="mt-1 text-xl font-semibold">Draft invoice</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Draft invoice</h1>
         </div>
         <form className="flex items-end gap-2" method="get">
           <input type="hidden" name="stream" value={stream.id} />

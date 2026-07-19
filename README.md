@@ -4,7 +4,7 @@
 
 DeskOps brings the clarity of a service desk to life admin. Capture a task once, assign it to the right stream, prioritise it, and work from one calm, filterable queue instead of a pile of scattered notes, reminders, and messages.
 
-DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It was extended during Build Week with a GPT-5.6 draft agent, a live Wheel of Life, and review-only Career invoice drafts.
+DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**. It combines a GPT-5.6 draft agent with a private Wellness Wheel while keeping every decision with the person using it.
 
 **Project domain:** [deskops.sbs](https://deskops.sbs)
 
@@ -14,15 +14,16 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Fast capture from anywhere in the app
 - Priority, due-date, status, recurrence, and stream filters
 - Recurring tickets that retain their monthly or yearly anchor date
-- Google sign-in, per-user data isolation, and row-level security
+- Google, GitHub and email magic-link sign-in with per-user data isolation and row-level security
 - Installable PWA with light and dark themes
-- Eight life domains and a Wheel of Life derived from queue health
-- Natural-language ticket drafting with GPT-5.6, always reviewed before saving
-- Review-only Career invoice drafts with deterministic itemised totals
+- A private, skippable Wellness Wheel across eight Dimensions of Wellness
+- Dated assessment history with user-chosen focus and reminder preferences
+- Natural-language ticket drafting with GPT-5.6, always editable and saved only by the user
+- One calm Rebalance suggestion chosen deterministically from the latest tracked Wellness gap, then drafted as one editable ticket
 
 ## Stack
 
-- Next.js 14, React 18, TypeScript, Tailwind CSS, and shadcn/ui
+- Next.js 15, React 18, TypeScript, Tailwind CSS, and Base UI/shadcn components
 - Supabase for Postgres, authentication, and row-level security
 - Cloudflare Workers through OpenNext for deployment
 - Vitest and Playwright for testing
@@ -32,7 +33,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 ### Prerequisites
 
 - Node.js 22 or newer
-- A Supabase project with Google OAuth configured
+- A Supabase project with the authentication providers you intend to expose configured
 - Supabase CLI, only if you want to apply migrations locally
 
 ### Setup
@@ -53,6 +54,8 @@ OPENAI_API_KEY=<your-openai-api-key>
 OPENAI_MODEL=gpt-5.6
 ```
 
+Invoice drafting remains available as a personal-mode extra and is hidden by default. Set both `ENABLE_INVOICES=true` and `NEXT_PUBLIC_ENABLE_INVOICES=true` locally to restore it.
+
 Apply the database schema to a linked Supabase project, then generate the typed database client:
 
 ```bash
@@ -68,6 +71,16 @@ npm run dev
 ```
 
 Open http://localhost:3000.
+
+### Authentication providers
+
+DeskOps supports Google, GitHub and passwordless email. Social providers still need to be enabled in the Supabase project before their buttons are exposed to users.
+
+- Add `https://deskops.sbs/auth/callback` to the Supabase redirect allow list.
+- For GitHub, create an OAuth app whose authorisation callback is `https://<project-ref>.supabase.co/auth/v1/callback`, then add its client ID and secret to the Supabase GitHub provider.
+- For magic links, enable the Supabase email provider and production SMTP. The default PKCE confirmation URL returns to `/auth/callback`. If you use a token-hash email template, point it to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`.
+
+Do not publish a shared username and password. Each judge or tester should authenticate separately, then use **Set up demo workspace** to create isolated generic sample data.
 
 ### Optional Supabase keepalive worker
 
@@ -99,6 +112,8 @@ npm run worker:deploy
 
 The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudflare account step.
 
+The first deployment of this release also provisions the SQLite-backed `AgentRateLimiter` Durable Object declared in `frontend/wrangler.jsonc`. DeskOps addresses one object per authenticated user, so AI limits are atomic across Worker isolates without concentrating all users in one object.
+
 ## Useful commands
 
 | Command | Purpose |
@@ -122,6 +137,7 @@ The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudfla
 - `frontend/app/actions/` holds server actions for tickets and streams.
 - `frontend/components/` holds the product UI.
 - `frontend/lib/db/` contains typed Supabase access helpers.
+- `frontend/lib/agent/` contains the draft-only AI boundary and its production Durable Object limiter.
 - `supabase/migrations/` is the source of truth for the database schema.
 - `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
 
@@ -129,18 +145,20 @@ The root package is an npm workspace orchestrator, so the documented `npm run ..
 
 ## OpenAI configuration
 
-`OPENAI_API_KEY` and `OPENAI_MODEL` are server-only variables. The Build Week configuration uses `OPENAI_MODEL=gpt-5.6`, the current GPT-5.6 alias. DeskOps sends natural-language ticket text and optional invoice copy to the Responses API with `store: false`.
+`OPENAI_API_KEY` and `OPENAI_MODEL` are server-only variables. The Build Week configuration uses `OPENAI_MODEL=gpt-5.6`, the current GPT-5.6 alias. DeskOps sends natural-language ticket text to the Responses API with `store: false`.
 
-AI never writes tickets, sends invoices, or changes financial totals. It only produces a draft for the signed-in user to review.
+AI never writes tickets or takes an external action. It only produces a draft for the signed-in user to review.
+
+Production AI calls are limited per authenticated user through a SQLite-backed Cloudflare Durable Object. Local Next.js development and unit tests use an in-process fallback because OpenNext does not expose Worker-owned Durable Objects to `next dev`.
 
 ## Build Week build
 
 The demo focuses on this end-to-end flow:
 
 1. A user types or speaks a messy life-admin brain dump.
-2. An AI assistant identifies tasks, deadlines, priorities, and life domains.
-3. DeskOps updates a single queue and a live Wheel of Life to reveal imbalance.
-4. Work items can be associated with a client and converted into a reviewable invoice draft.
+2. An AI assistant proposes tasks, deadlines and priorities for review.
+3. The person may separately record a private Wellness Wheel snapshot and choose their own focus.
+4. Rebalance selects one tracked gap deterministically and GPT-5.6 drafts one small step that the person may edit, add or dismiss.
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.
 
@@ -149,6 +167,8 @@ See [HACKATHON.md](HACKATHON.md) for the Build Week scope, prior-work boundary, 
 ## Built with Codex
 
 DeskOps is created by CBK47 with OpenAI Codex and GPT-5.6 for OpenAI Build Week. Codex accelerated the architecture, database migrations, deterministic tests, product UI, security review, repository rebuild, and documentation. The repository history preserves the sanitised prior-work boundary followed by the Build Week feature commits.
+
+The dated evidence boundary is explicit: `5e6ed8d` is the sanitised import of the pre-existing DeskOps MVP on 16 July 2026. Submission-period work begins with `d840cc2` and every later commit. On 18 July 2026, a bounded Codex improvement loop added the AI action gate (`1b87a61`), made invoice tooling personal-only (`bf816ef`), reduced AI tickets to one human decision (`f8bc359`), and delivered Rebalance V1 (`fbff318`). Each task passed the full test and Worker-build gates before it was pushed.
 
 This public repository rebuild was completed in Codex session `019f6cac-1f8d-7111-a538-a0f0171070d5`. See [HACKATHON.md](HACKATHON.md) for the submission record and [docs/REBUILD.md](docs/REBUILD.md) for the repository arrangement.
 

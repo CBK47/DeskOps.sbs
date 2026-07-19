@@ -9,6 +9,7 @@ const toastSuccess = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: routerRefresh }),
+  usePathname: () => "/queue",
 }));
 
 vi.mock("@/app/actions/agent", () => ({
@@ -62,80 +63,48 @@ describe("QuickAddDialog", () => {
         suggested_stream_name: "Home",
       },
     });
+    createTicketSafe.mockResolvedValue({ ok: true });
   });
 
-  it("requires a fresh AI draft when the natural-language source changes", async () => {
+  it("offers a stream setup path instead of an invalid ticket form", () => {
+    render(<QuickAddDialog streams={[]} />);
+
+    expect(screen.getByText("Create a stream first")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Set up a stream" })).toHaveAttribute("href", "/streams");
+    expect(screen.queryByLabelText("Title")).not.toBeInTheDocument();
+  });
+
+  it("lets the user edit an AI draft and add it with one ordinary submit action", async () => {
     render(<QuickAddDialog streams={[{ id: "stream-home", name: "Home" }]} />);
 
     const naturalLanguage = screen.getByLabelText("Describe it naturally");
     fireEvent.change(naturalLanguage, { target: { value: "renew the van insurance next Friday" } });
     fireEvent.click(screen.getByRole("button", { name: "Draft" }));
 
-    await screen.findByText("AI draft ready for your review");
+    await screen.findByText("I've drafted this — you decide.");
+    expect(screen.getByText("Drafted for you — edit or add.")).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add ticket" }).filter((button) => button.getAttribute("type") === "submit")).toHaveLength(1);
 
-    const reviewCheckbox = screen.getByLabelText("I have reviewed this AI draft.");
-    fireEvent.click(reviewCheckbox);
-    expect(reviewCheckbox).toBeChecked();
+    fireEvent.change(screen.getByLabelText("Title"), { target: { value: "Renew van insurance after comparing quotes" } });
+    fireEvent.submit(screen.getByLabelText("Title").closest("form") as HTMLFormElement);
 
-    fireEvent.change(naturalLanguage, { target: { value: "renew the van insurance next month instead" } });
-
-    expect(screen.getByText("The description changed after this draft was generated. Redraft before adding the ticket.")).toBeInTheDocument();
-    expect(reviewCheckbox).not.toBeChecked();
-    expect(reviewCheckbox).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Redraft" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Confirm and add ticket" })).toBeDisabled();
-
-    fireEvent.submit(screen.getByRole("button", { name: "Confirm and add ticket" }).closest("form") as HTMLFormElement);
-
-    expect(createTicketSafe).not.toHaveBeenCalled();
-    expect(toastError).toHaveBeenCalledWith("Redraft the AI ticket after changing the description.");
+    await waitFor(() => expect(createTicketSafe).toHaveBeenCalledOnce());
   });
 
-  it("re-enables review after the user redrafts the updated description", async () => {
-    draftTicketAction
-      .mockResolvedValueOnce({
-        ok: true,
-        draft: {
-          title: "Renew the van insurance",
-          notes: "",
-          priority: "high",
-          recurrence: "none",
-          due_date: "2026-07-24",
-          stream_id: "stream-home",
-          suggested_stream_name: "Home",
-        },
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        draft: {
-          title: "Renew the van insurance in August",
-          notes: "",
-          priority: "medium",
-          recurrence: "none",
-          due_date: "2026-08-14",
-          stream_id: "stream-home",
-          suggested_stream_name: "Home",
-        },
-      });
+  it("renders a calm inline retry message when the AI service is busy", async () => {
+    draftTicketAction.mockResolvedValueOnce({
+      ok: false,
+      code: "rate_limited",
+      error: "Busy moment — try again shortly.",
+    });
 
     render(<QuickAddDialog streams={[{ id: "stream-home", name: "Home" }]} />);
 
-    const naturalLanguage = screen.getByLabelText("Describe it naturally");
-    fireEvent.change(naturalLanguage, { target: { value: "renew the van insurance next Friday" } });
+    fireEvent.change(screen.getByLabelText("Describe it naturally"), { target: { value: "renew the van insurance" } });
     fireEvent.click(screen.getByRole("button", { name: "Draft" }));
-    await screen.findByDisplayValue("Renew the van insurance");
 
-    fireEvent.click(screen.getByLabelText("I have reviewed this AI draft."));
-    fireEvent.change(naturalLanguage, { target: { value: "renew the van insurance in August" } });
-
-    fireEvent.click(screen.getByRole("button", { name: "Redraft" }));
-
-    await waitFor(() => expect(screen.getByDisplayValue("Renew the van insurance in August")).toBeInTheDocument());
-
-    const reviewCheckbox = screen.getByLabelText("I have reviewed this AI draft.");
-    expect(reviewCheckbox).toBeEnabled();
-    expect(reviewCheckbox).not.toBeChecked();
-    expect(screen.getByText("Any change requires you to confirm your review again.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Confirm and add ticket" })).toBeDisabled();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Busy moment — try again shortly.");
+    expect(toastError).not.toHaveBeenCalled();
   });
 });

@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       streams: {
@@ -125,13 +100,93 @@ export type Database = {
           },
         ]
       }
+      wellness_assessment_entries: {
+        Row: {
+          areas: string[]
+          assessment_id: string
+          created_at: string
+          current_rating: number | null
+          desired_rating: number | null
+          dimension: Database["public"]["Enums"]["wellness_dimension"]
+          focus_state: Database["public"]["Enums"]["wellness_focus_state"]
+          id: string
+          user_id: string
+        }
+        Insert: {
+          areas?: string[]
+          assessment_id: string
+          created_at?: string
+          current_rating?: number | null
+          desired_rating?: number | null
+          dimension: Database["public"]["Enums"]["wellness_dimension"]
+          focus_state: Database["public"]["Enums"]["wellness_focus_state"]
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          areas?: string[]
+          assessment_id?: string
+          created_at?: string
+          current_rating?: number | null
+          desired_rating?: number | null
+          dimension?: Database["public"]["Enums"]["wellness_dimension"]
+          focus_state?: Database["public"]["Enums"]["wellness_focus_state"]
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_entry_assessment_owner_fkey"
+            columns: ["assessment_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_assessments"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      wellness_assessments: {
+        Row: {
+          created_at: string
+          custom_reminder_days: number | null
+          id: string
+          reminder: Database["public"]["Enums"]["wellness_reminder"]
+          status: Database["public"]["Enums"]["wellness_assessment_status"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_reminder_days?: number | null
+          id?: string
+          reminder?: Database["public"]["Enums"]["wellness_reminder"]
+          status?: Database["public"]["Enums"]["wellness_assessment_status"]
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          custom_reminder_days?: number | null
+          id?: string
+          reminder?: Database["public"]["Enums"]["wellness_reminder"]
+          status?: Database["public"]["Enums"]["wellness_assessment_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      save_wellness_assessment: {
+        Args: {
+          p_custom_reminder_days?: number
+          p_entries: Json
+          p_reminder: Database["public"]["Enums"]["wellness_reminder"]
+        }
+        Returns: string
+      }
       seed_demo_tickets: { Args: never; Returns: undefined }
       seed_initial_streams: { Args: never; Returns: undefined }
+      skip_wellness_assessment: { Args: never; Returns: string }
     }
     Enums: {
       life_domain:
@@ -146,6 +201,18 @@ export type Database = {
       recurrence_rule: "none" | "daily" | "weekly" | "monthly" | "yearly"
       ticket_priority: "low" | "medium" | "high" | "urgent"
       ticket_status: "open" | "in_progress" | "done" | "cancelled"
+      wellness_assessment_status: "completed" | "skipped"
+      wellness_dimension:
+        | "physical"
+        | "emotional"
+        | "intellectual"
+        | "social"
+        | "spiritual"
+        | "occupational"
+        | "environmental"
+        | "financial"
+      wellness_focus_state: "active_focus" | "background" | "not_tracking"
+      wellness_reminder: "never" | "monthly" | "quarterly" | "custom"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -271,9 +338,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       life_domain: [
@@ -289,6 +353,19 @@ export const Constants = {
       recurrence_rule: ["none", "daily", "weekly", "monthly", "yearly"],
       ticket_priority: ["low", "medium", "high", "urgent"],
       ticket_status: ["open", "in_progress", "done", "cancelled"],
+      wellness_assessment_status: ["completed", "skipped"],
+      wellness_dimension: [
+        "physical",
+        "emotional",
+        "intellectual",
+        "social",
+        "spiritual",
+        "occupational",
+        "environmental",
+        "financial",
+      ],
+      wellness_focus_state: ["active_focus", "background", "not_tracking"],
+      wellness_reminder: ["never", "monthly", "quarterly", "custom"],
     },
   },
 } as const

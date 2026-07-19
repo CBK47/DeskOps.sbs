@@ -22,7 +22,7 @@ describe("listCompletedTicketsForStream", () => {
     order.mockResolvedValue({ data: [], error: null });
   });
 
-  it("only includes completed tickets in a Career invoice draft", async () => {
+  it("only includes completed tickets in an eligible Occupational invoice draft", async () => {
     await expect(listCompletedTicketsForStream("career-stream")).resolves.toEqual([]);
 
     expect(from).toHaveBeenCalledWith("tickets");

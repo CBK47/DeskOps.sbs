@@ -13,11 +13,11 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
       <div className="w-full max-w-sm space-y-4 text-center">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
         <p className="text-sm text-muted-foreground">
-          That action didn&apos;t complete — your data is usually fine, but the page failed to update. Try again.
+          That action did not complete. Your data is usually fine, but the page failed to update. Try again.
         </p>
         <div className="flex justify-center gap-2">
           <Button type="button" onClick={reset}>Try again</Button>
-          <Link href="/">
+          <Link href="/queue">
             <Button type="button" variant="outline">Back to queue</Button>
           </Link>
         </div>

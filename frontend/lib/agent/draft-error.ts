@@ -4,6 +4,8 @@ const ACTIONABLE_DRAFT_ERRORS = new Set([
   "Keep the AI draft request to 1,200 characters or fewer.",
 ]);
 
+export const AGENT_BUSY_MESSAGE = "Busy moment — try again shortly.";
+
 export function ticketDraftErrorMessage(error: unknown) {
   if (error instanceof Error) {
     if (error.message.startsWith("AI drafting is not configured")) {
@@ -12,5 +14,5 @@ export function ticketDraftErrorMessage(error: unknown) {
     if (ACTIONABLE_DRAFT_ERRORS.has(error.message)) return error.message;
   }
 
-  return "DeskOps could not draft a ticket. Please check the details and try again.";
+  return AGENT_BUSY_MESSAGE;
 }
