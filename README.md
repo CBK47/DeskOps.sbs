@@ -161,8 +161,8 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 - `frontend/lib/db/` contains typed Supabase access helpers.
 - `frontend/lib/agent/` contains the draft-only AI boundary and its production Durable Object limiter.
 - `self-host/` contains the optional private one-computer launcher and its operating guide.
-- `supabase/migrations/` is the source of truth for the database schema.
-- `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
+- `supabase/migrations/` is the source of truth for the database schema, while `supabase/examples/` contains safe optional seed templates.
+- `personal/` is ignored for private local customisation.
 
 The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See the public [architecture](docs/ARCHITECTURE.md), [product context](docs/PRODUCT.md), and [design contract](docs/DESIGN.md), and read [personal customisation](docs/PERSONAL.md) before adding local personal data.
 

@@ -8,7 +8,7 @@ DeskOps keeps personal, client, health, and financial data out of the public rep
 
    ```bash
    mkdir -p personal
-   cp personal.example/streams.sql personal/streams.local.sql
+   cp supabase/examples/personal-streams.sql personal/streams.local.sql
    ```
 
 2. In Supabase, open **Authentication > Users** and copy the UUID for the account that should own the streams.
@@ -20,4 +20,4 @@ DeskOps keeps personal, client, health, and financial data out of the public rep
    npm run seed:personal
    ```
 
-`npm run seed:personal` writes to the linked database. Check the linked project carefully before running it. Only generic examples belong in `personal.example/`; never commit the private `personal/` directory.
+`npm run seed:personal` writes to the linked database. Check the linked project carefully before running it. Only generic examples belong in `supabase/examples/`; never commit the private `personal/` directory.
