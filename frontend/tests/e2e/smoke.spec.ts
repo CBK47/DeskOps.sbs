@@ -13,6 +13,16 @@ test("protected queue sends an unauthenticated user to the redesigned login", as
   await expect(page.getByRole("heading", { name: /welcome to deskops/i })).toBeVisible();
 });
 
+test("security contact is public without authentication", async ({ request }) => {
+  const response = await request.get("/.well-known/security.txt");
+
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toContain("text/plain");
+  await expect(response.text()).resolves.toContain(
+    "Contact: https://github.com/CBK47/DeskOps.sbs/security/advisories/new",
+  );
+});
+
 test("marketing content remains available without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();

@@ -1,0 +1,5 @@
+Contact: https://github.com/CBK47/DeskOps.sbs/security/advisories/new
+Expires: 2027-07-18T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://deskops.sbs/.well-known/security.txt
+Policy: https://github.com/CBK47/DeskOps.sbs/security/policy
