@@ -9,7 +9,11 @@ export type WellnessWheelEntry = {
 
 const SIZE = 360;
 const CENTRE = SIZE / 2;
-const RADIUS = 112;
+const RADIUS = 135;
+const VIEWBOX_X = -72;
+const VIEWBOX_Y = -16;
+const VIEWBOX_WIDTH = 504;
+const VIEWBOX_HEIGHT = 392;
 
 export function WellnessWheel({ entries, compact = false }: { entries: WellnessWheelEntry[]; compact?: boolean }) {
   const byDimension = new Map(entries.map((entry) => [entry.dimension, entry]));
@@ -36,8 +40,8 @@ export function WellnessWheel({ entries, compact = false }: { entries: WellnessW
       </div>
 
       <svg
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="mx-auto mt-2 block w-full max-w-sm animate-soft-in motion-reduce:animate-none"
+        viewBox={`${VIEWBOX_X} ${VIEWBOX_Y} ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+        className="mx-auto mt-2 block w-full max-w-md animate-soft-in motion-reduce:animate-none"
         role="img"
         aria-label={`Wellness Wheel. ${summary}`}
       >
@@ -90,11 +94,12 @@ export function WellnessWheel({ entries, compact = false }: { entries: WellnessW
         {WELLNESS_DIMENSIONS.map((dimension) => {
           const entry = byDimension.get(dimension.id);
           const value = entry?.focus_state === "not_tracking" || !entry?.current_rating ? "Untracked" : `${entry.current_rating}/10`;
+          const showFocus = entry?.focus_state === "active_focus" && entry.current_rating !== null;
           return (
             <li key={dimension.id} className="flex min-h-8 items-center justify-between gap-3 border-t border-border/70 pt-2 text-sm">
               <span>{dimension.label}</span>
               <span className="text-right font-mono text-xs tabular-nums text-muted-foreground">
-                {value}{entry?.focus_state === "active_focus" ? " · focus" : ""}
+                {value}{showFocus ? " · focus" : ""}
               </span>
             </li>
           );

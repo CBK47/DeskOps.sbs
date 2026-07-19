@@ -17,5 +17,17 @@ describe("WellnessWheel", () => {
     expect(physical?.className).not.toMatch(/destructive|warning|red/);
     expect(emotional).toHaveTextContent("Untracked");
     expect(screen.getByRole("img")).toHaveAccessibleName(/Emotional: untracked/);
+    expect(screen.getByRole("img")).toHaveAttribute("viewBox", "-72 -16 504 392");
+  });
+
+  it("does not present an unrated active focus as meaningful Wheel data", () => {
+    render(<WellnessWheel entries={[
+      { dimension: "environmental", current_rating: null, desired_rating: null, focus_state: "active_focus" },
+    ]} />);
+
+    const values = screen.getByRole("list", { name: "Wellness Wheel values" });
+    const environmental = within(values).getByText("Environmental").closest("li");
+    expect(environmental).toHaveTextContent("Untracked");
+    expect(environmental).not.toHaveTextContent("focus");
   });
 });

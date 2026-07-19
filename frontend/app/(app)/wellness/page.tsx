@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RotateCcw } from "lucide-react";
+import { Radar, RotateCcw } from "lucide-react";
 import { AssessmentFlow } from "@/components/wellness/AssessmentFlow";
 import { CompanionTools } from "@/components/wellness/CompanionTools";
 import { WellnessHistory } from "@/components/wellness/WellnessHistory";
@@ -7,7 +7,7 @@ import { WellnessWheel } from "@/components/wellness/WellnessWheel";
 import { buttonVariants } from "@/components/ui/button";
 import { listWellnessAssessments } from "@/lib/db/wellness";
 import { cn } from "@/lib/utils";
-import type { WellnessDimension } from "@/lib/wellness";
+import { hasWellnessRatingData, type WellnessDimension } from "@/lib/wellness";
 
 export default async function WellnessPage({
   searchParams,
@@ -17,9 +17,41 @@ export default async function WellnessPage({
   const params = await searchParams;
   const assessments = await listWellnessAssessments();
   const latest = assessments[0] ?? null;
+  const hasWellnessData = latest ? hasWellnessRatingData(latest.entries) : false;
   const showAssessment = !latest || params.retake === "1";
 
   if (showAssessment) return <AssessmentFlow firstRun={params.first === "1" || !latest} />;
+
+  if (!hasWellnessData) {
+    return (
+      <div className="space-y-6">
+        <header>
+          <p className="signal-label">Your private reflection</p>
+          <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Wellness Wheel</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            You left every rating blank. That is a valid choice, and DeskOps has nothing to score or infer from it.
+          </p>
+        </header>
+
+        {params.completed === "1" && (
+          <p className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm" role="status">
+            Your private reflection was saved without ratings. Nothing was treated as zero.
+          </p>
+        )}
+
+        <section className="empty-state min-h-80" aria-labelledby="empty-wellness-title">
+          <span className="empty-state-icon"><Radar className="h-6 w-6" aria-hidden /></span>
+          <h2 id="empty-wellness-title" className="mt-4 text-xl font-semibold">Nothing is being scored.</h2>
+          <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+            When it feels useful, a short snapshot can make the Wheel and one optional Rebalance step visible.
+          </p>
+          <Link href="/wellness?retake=1" className={cn(buttonVariants({ size: "lg" }), "mt-6")}>
+            Take a snapshot (about 2 minutes)
+          </Link>
+        </section>
+      </div>
+    );
+  }
 
   const focusDimensions = latest.entries
     .filter((entry) => entry.focus_state === "active_focus")

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ticketDraftErrorMessage } from "@/lib/agent/draft-error";
+import { AI_DRAFT_UNAVAILABLE_MESSAGE, ticketDraftErrorMessage } from "@/lib/agent/draft-error";
 
 describe("ticketDraftErrorMessage", () => {
   it("keeps safe, actionable drafting errors for the user", () => {
@@ -11,7 +11,7 @@ describe("ticketDraftErrorMessage", () => {
 
   it("explains missing AI configuration without exposing other failures", () => {
     expect(ticketDraftErrorMessage(new Error("AI drafting is not configured. Add OPENAI_API_KEY and OPENAI_MODEL to the server environment.")))
-      .toBe("AI drafting is not configured for this deployment yet.");
+      .toBe(AI_DRAFT_UNAVAILABLE_MESSAGE);
     expect(ticketDraftErrorMessage(new Error("Responses API timeout: internal detail")))
       .toBe("Busy moment. Try again shortly.");
   });

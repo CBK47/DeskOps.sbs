@@ -66,3 +66,9 @@ export const WELLNESS_FOCUS_LABELS: Record<WellnessFocusState, string> = {
 export function isWellnessDimension(value: unknown): value is WellnessDimension {
   return typeof value === "string" && WELLNESS_DIMENSIONS.some((dimension) => dimension.id === value);
 }
+
+export function hasWellnessRatingData(
+  entries: readonly { current_rating: number | null; desired_rating: number | null }[],
+) {
+  return entries.some((entry) => entry.current_rating !== null || entry.desired_rating !== null);
+}

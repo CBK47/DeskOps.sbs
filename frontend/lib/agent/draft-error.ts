@@ -5,11 +5,12 @@ const ACTIONABLE_DRAFT_ERRORS = new Set([
 ]);
 
 export const AGENT_BUSY_MESSAGE = "Busy moment. Try again shortly.";
+export const AI_DRAFT_UNAVAILABLE_MESSAGE = "AI drafting isn’t available right now. You can still add the ticket manually, or try again shortly.";
 
 export function ticketDraftErrorMessage(error: unknown) {
   if (error instanceof Error) {
     if (error.message.startsWith("AI drafting is not configured")) {
-      return "AI drafting is not configured for this deployment yet.";
+      return AI_DRAFT_UNAVAILABLE_MESSAGE;
     }
     if (ACTIONABLE_DRAFT_ERRORS.has(error.message)) return error.message;
   }

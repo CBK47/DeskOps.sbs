@@ -138,9 +138,10 @@ Keep the server-only values as Cloudflare Worker secrets:
 ```bash
 cd frontend
 wrangler secret put OPENAI_API_KEY
-wrangler secret put OPENAI_MODEL
 npm run worker:deploy
 ```
+
+`OPENAI_MODEL=gpt-5.6` is declared as a non-secret Worker variable in `frontend/wrangler.jsonc` so the deployed model choice is reviewable. Only the API key belongs in the secret store.
 
 `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` may also be set as Worker secrets for server-side runtime access, but that does not replace their build-time values in `frontend/.env.local`.
 

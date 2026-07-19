@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { validateAssessment, type WellnessAssessmentInput } from "@/lib/wellness-assessment";
 import { companionToolsFor } from "@/lib/companion-tools";
+import { hasWellnessRatingData } from "@/lib/wellness";
 
 const validInput: WellnessAssessmentInput = {
   entries: [
@@ -53,5 +54,16 @@ describe("companionToolsFor", () => {
     const tools = companionToolsFor(["financial"]);
     expect(tools.map((tool) => tool.name)).toEqual(["Actual Budget", "Paperless-ngx"]);
     expect(tools.every((tool) => tool.href.startsWith("https://github.com/"))).toBe(true);
+  });
+});
+
+describe("hasWellnessRatingData", () => {
+  it("treats a focus without ratings as an unfinished snapshot", () => {
+    expect(hasWellnessRatingData([
+      { current_rating: null, desired_rating: null },
+    ])).toBe(false);
+    expect(hasWellnessRatingData([
+      { current_rating: null, desired_rating: 7 },
+    ])).toBe(true);
   });
 });

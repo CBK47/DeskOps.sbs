@@ -3,7 +3,7 @@
 import { listStreams } from "@/lib/db/streams";
 import { parseTicketText, type TicketDraft } from "@/lib/agent/parseTicket";
 import { polishInvoiceCopy, type InvoiceDraft, type InvoicePolishResult } from "@/lib/agent/draftInvoice";
-import { AGENT_BUSY_MESSAGE, ticketDraftErrorMessage } from "@/lib/agent/draft-error";
+import { AGENT_BUSY_MESSAGE, AI_DRAFT_UNAVAILABLE_MESSAGE, ticketDraftErrorMessage } from "@/lib/agent/draft-error";
 import { takeAgentRequestSlot } from "@/lib/agent/rate-limit";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import { isInvoiceActionEnabled } from "@/lib/features";
@@ -33,11 +33,12 @@ export async function draftTicketAction(text: string): Promise<TicketDraftResult
     const draft = await parseTicketText(text, await listStreams());
     return { ok: true, draft };
   } catch (error) {
+    const notConfigured = error instanceof Error && error.message.startsWith("AI drafting is not configured");
     const message = ticketDraftErrorMessage(error);
     if (message === AGENT_BUSY_MESSAGE) return busyFailure("temporarily_unavailable");
     return {
       ok: false,
-      code: message.startsWith("AI drafting is not configured") ? "not_configured" : "invalid_request",
+      code: notConfigured ? "not_configured" : "invalid_request",
       error: message,
     };
   }
@@ -57,7 +58,7 @@ export async function polishInvoiceAction(draft: InvoiceDraft): Promise<InvoiceP
     return { ok: true, polish: await polishInvoiceCopy(draft) };
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("AI drafting is not configured")) {
-      return { ok: false, code: "not_configured", error: "AI polish is not configured for this deployment yet." };
+      return { ok: false, code: "not_configured", error: "AI polishing isn’t available right now. You can still review and use the draft without it." };
     }
     return busyFailure("temporarily_unavailable");
   }
@@ -92,7 +93,7 @@ export async function draftRebalanceAction(assessmentId: string): Promise<Rebala
     };
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("AI drafting is not configured")) {
-      return { ok: false, code: "not_configured", error: "AI drafting is not configured for this deployment yet." };
+      return { ok: false, code: "not_configured", error: AI_DRAFT_UNAVAILABLE_MESSAGE };
     }
     return busyFailure("temporarily_unavailable");
   }

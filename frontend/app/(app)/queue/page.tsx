@@ -7,6 +7,7 @@ import { TicketRow } from "@/components/ticket/TicketRow";
 import { TicketFilters } from "@/components/ticket/TicketFilters";
 import { WellnessWheel } from "@/components/wellness/WellnessWheel";
 import { RebalanceSuggestion } from "@/components/rebalance/RebalanceSuggestion";
+import { hasWellnessRatingData } from "@/lib/wellness";
 
 export default async function QueuePage({
   searchParams,
@@ -30,6 +31,7 @@ export default async function QueuePage({
   const activeStreams = streams
     .filter((stream) => !stream.archived)
     .map((stream) => ({ id: stream.id, name: stream.name }));
+  const hasWellnessData = latestAssessment ? hasWellnessRatingData(latestAssessment.entries) : false;
 
   return (
     <div className="space-y-6">
@@ -54,7 +56,7 @@ export default async function QueuePage({
 
       <div className="grid items-start gap-6 xl:grid-cols-[23rem_minmax(0,1fr)]">
         <aside className="space-y-4 xl:sticky xl:top-20">
-          {latestAssessment ? (
+          {latestAssessment && hasWellnessData ? (
             <div className="surface-panel p-5">
               <WellnessWheel entries={latestAssessment.entries} compact />
               <Link href="/wellness" className="text-link mt-5 inline-flex items-center gap-2">
@@ -64,9 +66,9 @@ export default async function QueuePage({
           ) : (
             <div className="surface-panel p-5">
               <p className="signal-label">Private and optional</p>
-              <h2 className="mt-3 text-2xl font-semibold">Begin your Wellness Wheel</h2>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">Create a reflective snapshot without turning untracked parts of life into zeroes.</p>
-              <Link href="/wellness?first=1" className="primary-cta mt-6 w-full">Start when ready <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+              <h2 className="mt-3 text-2xl font-semibold">Take your first snapshot</h2>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Two quiet minutes to reflect on what feels useful. Unrated areas stay untracked, never zero.</p>
+              <Link href="/wellness?first=1" className="primary-cta mt-6 w-full">Begin (about 2 minutes) <ArrowRight className="h-4 w-4" aria-hidden /></Link>
             </div>
           )}
         </aside>
