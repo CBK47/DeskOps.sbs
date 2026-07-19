@@ -16,7 +16,7 @@ Do not treat them as the same state.
 
 ## Executive status
 
-The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented and verified on the working branch. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
+The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented, verified and merged to `main`. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
 
 The release branch can be pushed safely, but a full demo deployment remains gated on the missing `OPENAI_API_KEY` and `OPENAI_MODEL` Worker secrets. GitHub and email login are implemented with provider-aware visibility, but Supabase must still be given a GitHub OAuth app and production SMTP before those options become live.
 
@@ -25,11 +25,11 @@ The release branch can be pushed safely, but a full demo deployment remains gate
 | Item | State |
 | --- | --- |
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
-| Production branch | `main` at `8cd6f8b` |
+| Production branch | `main` promoted through `11d4699` on 19 July 2026 |
 | Review branch | `codex/frontend-wellness-redesign` |
 | Prior release-evidence baseline | `66a8bc4` (`docs: close bounded improvement loop`) |
 | Review branch pushed | Yes |
-| Review branch merged to `main` | No |
+| Review branch merged to `main` | Yes, PR [#1](https://github.com/CBK47/DeskOps.sbs/pull/1) |
 | Force-push required | No |
 
 The implementation commits on the review branch are:
@@ -46,9 +46,9 @@ The implementation commits on the review branch are:
 10. `8adb64e` — Rebalance retry, dismissal and keyboard-focus polish.
 11. `66a8bc4` — bounded-loop release and submission documentation.
 
-The current release-candidate changes add provider-aware Google, GitHub and email magic-link entry, a token-hash confirmation route, a SQLite-backed per-user Durable Object AI limiter, regenerated production database types and updated release evidence. They are recorded by the commit containing this report.
+The current `main` release changes add provider-aware Google, GitHub and email magic-link entry, a token-hash confirmation route, a SQLite-backed per-user Durable Object AI limiter, regenerated production database types and updated release evidence.
 
-## What is implemented on the review branch
+## What is implemented on `main`
 
 ### Public and authentication surfaces
 
@@ -112,7 +112,7 @@ As checked on 19 July 2026:
 - Current Supabase auth settings expose Google only. GitHub and email are disabled pending their external credentials and SMTP configuration.
 - Cloudflare production is account `3aecf1bd75b896c027f3be6a33e7df6b`, Worker `deskops`, with custom domain `deskops.sbs`.
 - The latest existing Worker deployment is version `dd00da08-9705-4347-9e7f-6691fbd154c1`, created 18 July 2026.
-- `https://deskops.sbs/` still returns `307` to `/login`, and the live login remains the old minimal `Sign in to DeskOps` page. Production is not yet serving the review branch.
+- `https://deskops.sbs/` still returns `307` to `/login`, and the live login remains the old minimal `Sign in to DeskOps` page. Production is not yet serving the newly promoted `main` source.
 - The Worker has the public Supabase variables but does not have `OPENAI_API_KEY` or `OPENAI_MODEL`. A full AI demo is therefore not configured in production.
 
 ## Release blockers
@@ -129,11 +129,10 @@ Create the GitHub OAuth app, store its client ID and secret in Supabase, enable 
 
 After the AI and authentication gates are ready:
 
-1. rebuild from the exact release commit with the public Supabase variables present;
+1. rebuild `main` from the promoted release source with the public Supabase variables present;
 2. deploy the Cloudflare Worker and its new `AgentRateLimiter` export;
 3. smoke-test `/`, `/login`, all enabled auth methods, callback routes, `/queue`, demo workspace setup, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
-4. merge or fast-forward `main` only when the live release is confirmed;
-5. record the release commit, Worker version and deployment time here.
+4. record the deployed Worker version and deployment time here; source control promotion is already complete.
 
 ## Known limitations, not blockers for planning
 
@@ -158,7 +157,7 @@ Recommended default: release-first, then submission-first. Keep platform work ou
 
 ## Guardrails for an autonomous loop
 
-- Work only from the canonical clone and the named working branch.
+- Work only from the canonical clone and the named protected branch or a new named release branch.
 - Fetch before starting and never force-push.
 - Preserve unrelated user files and real personal data boundaries.
 - Do not deploy, migrate production, change secrets or submit external forms without explicit human approval.
@@ -174,4 +173,4 @@ Recommended default: release-first, then submission-first. Keep platform work ou
 
 ## Next human action
 
-Add the production OpenAI key through Wrangler's interactive secret workflow and create the GitHub OAuth app and SMTP configuration. No secret should be pasted into chat or committed. Once those three external credentials exist, deploy the exact release commit, run the production smoke sequence and only then fast-forward `main`.
+Add the production OpenAI key through Wrangler's interactive secret workflow and create the GitHub OAuth app and SMTP configuration. No secret should be pasted into chat or committed. Once those three external credentials exist, deploy the promoted `main` source and run the production smoke sequence.
