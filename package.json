@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "npm --workspace @deskops/frontend run dev",
-    "self-host": "node scripts/self-host.mjs",
+    "self-host": "node self-host/start.mjs",
     "self-host:stop": "supabase stop --workdir . --agent=no",
     "self-host:backup": "node -e \"require('node:fs').mkdirSync('backups', { recursive: true })\" && supabase db dump --local --data-only --file backups/deskops-data.sql --workdir . --agent=no",
     "build": "npm --workspace @deskops/frontend run build",
