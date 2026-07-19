@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "deskops",
-  "main": ".open-next/worker.js",
+  "main": "custom-worker.ts",
   "compatibility_date": "2026-07-17",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": false,
@@ -21,5 +21,19 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "deskops"
     }
-  ]
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "AGENT_RATE_LIMITER",
+        "class_name": "AgentRateLimiter"
+      }
+    ]
+  },
+  "exports": {
+    "AgentRateLimiter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
 }

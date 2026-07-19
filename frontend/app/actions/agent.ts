@@ -27,7 +27,7 @@ export type RebalanceDraftActionResult = {
 export async function draftTicketAction(text: string): Promise<TicketDraftResult> {
   const userId = await authenticatedUserId();
   if (!userId) return unauthenticatedFailure();
-  if (!takeAgentRequestSlot(userId)) return busyFailure("rate_limited");
+  if (!(await takeAgentRequestSlot(userId))) return busyFailure("rate_limited");
 
   try {
     const draft = await parseTicketText(text, await listStreams());
@@ -51,7 +51,7 @@ export async function polishInvoiceAction(draft: InvoiceDraft): Promise<InvoiceP
   if (!isInvoiceActionEnabled()) {
     return { ok: false, code: "feature_disabled", error: "Invoice drafting is unavailable in this workspace." };
   }
-  if (!takeAgentRequestSlot(userId)) return busyFailure("rate_limited");
+  if (!(await takeAgentRequestSlot(userId))) return busyFailure("rate_limited");
 
   try {
     return { ok: true, polish: await polishInvoiceCopy(draft) };
@@ -82,7 +82,7 @@ export async function draftRebalanceAction(assessmentId: string): Promise<Rebala
   if (!streams.some((stream) => !stream.archived)) {
     return { ok: false, code: "invalid_request", error: "Create a stream before drafting a rebalance step." };
   }
-  if (!takeAgentRequestSlot(userId)) return busyFailure("rate_limited");
+  if (!(await takeAgentRequestSlot(userId))) return busyFailure("rate_limited");
 
   try {
     return {

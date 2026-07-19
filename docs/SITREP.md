@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| Snapshot | 18 July 2026 |
+| Snapshot | 19 July 2026 |
 | Purpose | Authoritative hand-off for the next planning loop |
 | Repository | `CBK47/DeskOps.sbs` |
 | Working branch | `codex/frontend-wellness-redesign` |
@@ -16,9 +16,9 @@ Do not treat them as the same state.
 
 ## Executive status
 
-The redesign, private Wellness foundation, secured AI draft boundary and Rebalance V1 are implemented, verified and pushed to the working branch. Production has not been migrated or deployed and still serves the pre-redesign application from `main`.
+The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented and verified on the working branch. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
 
-The product code is ready for a controlled release process, but it should not be promoted by deploying the frontend alone. The new Wellness tables are absent from the configured Supabase project. The exact production Supabase and Cloudflare targets still require human confirmation before the schema and Worker can be promoted in order.
+The release branch can be pushed safely, but a full demo deployment remains gated on the missing `OPENAI_API_KEY` and `OPENAI_MODEL` Worker secrets. GitHub and email login are implemented with provider-aware visibility, but Supabase must still be given a GitHub OAuth app and production SMTP before those options become live.
 
 ## Source-control state
 
@@ -27,7 +27,7 @@ The product code is ready for a controlled release process, but it should not be
 | Canonical remote | `https://github.com/CBK47/DeskOps.sbs.git` |
 | Production branch | `main` at `8cd6f8b` |
 | Review branch | `codex/frontend-wellness-redesign` |
-| Functional implementation baseline | `8adb64e` (`fix: polish rebalance recovery states`) |
+| Prior release-evidence baseline | `66a8bc4` (`docs: close bounded improvement loop`) |
 | Review branch pushed | Yes |
 | Review branch merged to `main` | No |
 | Force-push required | No |
@@ -44,13 +44,19 @@ The implementation commits on the review branch are:
 8. `f8bc359` — one-decision AI ticket capture;
 9. `fbff318` — deterministic Rebalance selection and one-ticket draft flow;
 10. `8adb64e` — Rebalance retry, dismissal and keyboard-focus polish.
+11. `66a8bc4` — bounded-loop release and submission documentation.
+
+The current release-candidate changes add provider-aware Google, GitHub and email magic-link entry, a token-hash confirmation route, a SQLite-backed per-user Durable Object AI limiter, regenerated production database types and updated release evidence. They are recorded by the commit containing this report.
 
 ## What is implemented on the review branch
 
 ### Public and authentication surfaces
 
 - A real public landing page at `/` instead of an authentication redirect.
-- A focused, responsive `/login` with a full-bleed studio backdrop, centred sign-in card, light/dark themes, privacy cues and the existing Google OAuth flow.
+- A focused, responsive `/login` with a full-bleed studio backdrop, centred sign-in card, light/dark themes and privacy cues.
+- Provider-aware Google, GitHub and email magic-link entry. Options remain hidden until the corresponding Supabase provider is enabled, avoiding dead demo controls.
+- An `/auth/confirm` route for token-hash email templates and the existing safe `/auth/callback` path.
+- No shared demo credentials: each tester signs in separately and can create private generic sample data with **Set up demo workspace**.
 - Public privacy, terms and not-found pages.
 - Restrained marketing reveals with a no-JavaScript fallback and reduced-motion support.
 
@@ -63,6 +69,7 @@ The implementation commits on the review branch are:
 - Accessible destructive-action confirmation rather than a native browser prompt.
 - Invoice tooling retained behind default-off server and client personal-mode flags, absent from the public product.
 - AI actions require an authenticated user, share a per-user sliding-window limiter and return calm typed retry states.
+- Production limiting uses one SQLite-backed Cloudflare Durable Object per authenticated user, giving an atomic limit across Worker isolates. Local development and unit tests retain an in-process fallback.
 - Rebalance deterministically chooses the largest tracked Wellness gap, lets active focus break a tie, drafts exactly one small ticket, and supports edit, add or session-only dismissal.
 
 ### Wellness foundation
@@ -83,64 +90,68 @@ The implementation commits on the review branch are:
 
 ## Verified quality gates
 
-The current functional implementation passed:
+The 19 July release candidate passed:
 
 - `npm run typecheck`;
 - `npm run lint`;
-- `npm run test`: 17 files, 78 tests;
-- `npm run test:e2e`: 5 Chromium tests;
-- `npm run worker:build`: successful OpenNext Cloudflare bundle.
+- `npm run test`: 18 files, 80 tests;
+- `npm run test:e2e`: 6 Chromium tests;
+- `npm run worker:build`: successful OpenNext Cloudflare bundle;
+- `npx wrangler deploy --dry-run`: successful, with `AGENT_RATE_LIMITER` resolved to the `AgentRateLimiter` Durable Object.
 
 The Worker build emits a duplicate `options` key warning inside a generated OpenNext dependency bundle. The build completes successfully; no authored DeskOps source contains that duplicate.
 
-Visual QA covered the landing page and the final studio-style login in desktop light, desktop dark, authentication-error and phone states. Authenticated production data was not used for visual QA because the new production schema has not been applied.
+Visual QA covered the landing page and the final studio-style login in desktop light, desktop dark, authentication-error, all-provider and phone states. Authenticated production data was not used for visual QA.
 
 ## Production reality
 
-As checked on 18 July 2026:
+As checked on 19 July 2026:
 
-- `https://deskops.sbs/` returns `307` to `/login`;
-- the live login is the old minimal `Sign in to DeskOps` page;
-- production is not serving the review branch;
-- the configured Supabase REST API returns `404` for both `wellness_assessments` and `wellness_assessment_entries`;
-- the local Supabase directory is not linked, so the migration cannot be safely applied with `supabase db push` until the exact target project is confirmed.
-
-The production OpenAI secret/model configuration was not inspected and should remain treated as unknown until checked through the authorised Cloudflare secret workflow.
+- Supabase production is project `deskops`, reference `szcflutkshtuzpvfdvae`, organisation `wtmuymqjtztzrwgrwknf`, in West Europe.
+- Migration `20260718000001_wellness_assessments` was applied atomically through the Supabase Management API. Verification found one migration-history row, two RLS-enabled Wellness tables, eight policies and two assessment functions.
+- Current Supabase auth settings expose Google only. GitHub and email are disabled pending their external credentials and SMTP configuration.
+- Cloudflare production is account `3aecf1bd75b896c027f3be6a33e7df6b`, Worker `deskops`, with custom domain `deskops.sbs`.
+- The latest existing Worker deployment is version `dd00da08-9705-4347-9e7f-6691fbd154c1`, created 18 July 2026.
+- `https://deskops.sbs/` still returns `307` to `/login`, and the live login remains the old minimal `Sign in to DeskOps` page. Production is not yet serving the review branch.
+- The Worker has the public Supabase variables but does not have `OPENAI_API_KEY` or `OPENAI_MODEL`. A full AI demo is therefore not configured in production.
 
 ## Release blockers
 
-### P0: schema before frontend
+### P0: configure the production AI boundary
 
-`20260718000001_wellness_assessments.sql` must be applied to the intended production Supabase project before deploying the review branch. The queue and callback read the new table, so a frontend-only deployment risks breaking authenticated navigation.
+Set `OPENAI_API_KEY` and `OPENAI_MODEL` through Wrangler's secret workflow without printing or committing them. The additive database migration is already live, so the old Worker remains safe while this final deployment dependency is resolved.
 
-### P1: controlled promotion
+### P1: finish public authentication
 
-After the schema and AI gate are ready:
+Create the GitHub OAuth app, store its client ID and secret in Supabase, enable email auth with production SMTP and test both callbacks. The release can technically ship with Google only because unavailable options stay hidden, but the requested three-method demo requires this setup.
+
+### P2: controlled promotion
+
+After the AI and authentication gates are ready:
 
 1. rebuild from the exact release commit with the public Supabase variables present;
-2. configure server-only OpenAI secrets without printing or committing them;
-3. deploy the Cloudflare Worker;
-4. smoke-test `/`, `/login`, OAuth callback, `/queue`, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
-5. merge or fast-forward `main` only when the live release is confirmed;
-6. record the release commit and deployment time here.
+2. deploy the Cloudflare Worker and its new `AgentRateLimiter` export;
+3. smoke-test `/`, `/login`, all enabled auth methods, callback routes, `/queue`, demo workspace setup, assessment save/history, AI ticket draft and Rebalance add/edit/dismiss;
+4. merge or fast-forward `main` only when the live release is confirmed;
+5. record the release commit, Worker version and deployment time here.
 
 ## Known limitations, not blockers for planning
 
 - Reminder cadence is stored but DeskOps does not send reminders.
 - Companion tools are independent outbound links, not integrations.
 - Invoice drafting remains a hidden personal-mode extra; its quantities default to one hour because persisted time tracking does not exist.
-- The current AI limiter is intentionally per-user, per Worker isolate and in memory. Move it to Cloudflare KV or a Durable Object before material public traffic or cross-isolate enforcement is required.
+- Local Next.js development cannot use the Worker-owned Durable Object and intentionally falls back to in-process limiting. The production bundle uses the Durable Object.
 - Nested Wellness areas, context tags, organisation workspaces, roles and client portals are not implemented.
 - The old ticket-derived `life_domain` Wheel calculation remains in historical code/tests but is no longer presented as a personal wellness score.
-- The correct core-build Codex session ID is still not recorded; the repository currently records the sanitised rebuild session.
+- The correct core-build Codex session is `019f6cac-1f8d-7111-a538-a0f0171070d5` (`Design DeskOps life-ops app`). The current redesign session `019f755b-9a6b-7b31-a53b-4d36445096e5` is separate.
 - A demo video and final Devpost status are not recorded in this repository.
 
 ## Decisions for the next planning loop
 
 Fabel should help choose and sequence these outcomes rather than treating every historical checkbox as active:
 
-1. **Release-first:** confirm targets, apply the migration and deploy the verified redesign and Rebalance flow safely.
-2. **Submission-first:** close the session-ID, demo-video, live-demo and Devpost evidence gaps around the released product.
+1. **Release-first:** configure the missing Worker model secrets and auth-provider credentials, then deploy and smoke-test the verified redesign and Rebalance flow safely.
+2. **Submission-first:** record the demo video and close the live-demo and Devpost evidence gaps around the released product.
 3. **Platform-later:** design the owning-workspace, membership and client-portal model only after the bounded submission work is complete.
 
 Recommended default: release-first, then submission-first. Keep platform work outside the current Build Week release.
@@ -161,6 +172,6 @@ Recommended default: release-first, then submission-first. Keep platform work ou
 
 > Read `PRODUCT.md`, `DESIGN.md`, `docs/SITREP.md`, `docs/RELEASE-CHECKLIST.md`, `docs/frontend-redesign-plan.md`, and the historical `WINNING-PLAN.md` and `NEMO-EXECUTION-PLAN.md`. Produce a concise two-part plan: **Where DeskOps is now** and **Where DeskOps should be next**. Treat the private Wellness assessment, secured AI boundary and Rebalance V1 as implemented. Prioritise a safe release and submission evidence, name dependencies and explicit human approvals, define measurable exit criteria, and propose a bounded autonomous loop for Codex. Do not implement, deploy, migrate, change secrets or submit anything during the planning pass.
 
-## Next human decision
+## Next human action
 
-Confirm which Supabase project and Cloudflare Worker are the intended production targets, then choose whether the next loop begins with the release-first track or remains planning-only.
+Add the production OpenAI key through Wrangler's interactive secret workflow and create the GitHub OAuth app and SMTP configuration. No secret should be pasted into chat or committed. Once those three external credentials exist, deploy the exact release commit, run the production smoke sequence and only then fast-forward `main`.

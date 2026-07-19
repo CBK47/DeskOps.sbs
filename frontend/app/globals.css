@@ -364,7 +364,7 @@
   }
 
   .login-page {
-    @apply relative grid min-h-dvh place-items-center overflow-hidden px-5 py-24 sm:px-8;
+    @apply relative grid min-h-dvh place-items-center overflow-x-hidden overflow-y-auto px-5 py-24 sm:px-8;
     background-color: #071020;
     background-image:
       linear-gradient(180deg, rgb(3 9 20 / 0.12), rgb(3 9 20 / 0.38)),
@@ -375,7 +375,7 @@
   }
 
   .login-panel {
-    @apply relative z-10 mx-auto w-full max-w-[27rem];
+    @apply relative z-10 mx-auto w-full max-w-[30rem];
   }
 
   .login-action-card {

@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       streams: {
@@ -203,7 +178,7 @@ export type Database = {
     Functions: {
       save_wellness_assessment: {
         Args: {
-          p_custom_reminder_days?: number | null
+          p_custom_reminder_days?: number
           p_entries: Json
           p_reminder: Database["public"]["Enums"]["wellness_reminder"]
         }
@@ -363,9 +338,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       life_domain: [

@@ -38,3 +38,17 @@ test("login exposes an authentication failure as an alert", async ({ page }) => 
   await page.goto("/login?error=auth");
   await expect(page.getByRole("alert").filter({ hasText: "Authentication did not complete" })).toBeVisible();
 });
+
+test("login offers social and passwordless entry without a shared demo account", async ({ page }) => {
+  await page.route("**/auth/v1/settings", (route) => route.fulfill({
+    contentType: "application/json",
+    body: JSON.stringify({ external: { google: true, github: true, email: true } }),
+  }));
+  await page.goto("/login");
+
+  await expect(page.getByRole("button", { name: "Google" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "GitHub" })).toBeVisible();
+  await expect(page.getByLabel("Email address")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Email me a link" })).toBeVisible();
+  await expect(page.getByText(/set up demo workspace/i)).toBeVisible();
+});

@@ -14,7 +14,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Fast capture from anywhere in the app
 - Priority, due-date, status, recurrence, and stream filters
 - Recurring tickets that retain their monthly or yearly anchor date
-- Google sign-in, per-user data isolation, and row-level security
+- Google, GitHub and email magic-link sign-in with per-user data isolation and row-level security
 - Installable PWA with light and dark themes
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
@@ -33,7 +33,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 ### Prerequisites
 
 - Node.js 22 or newer
-- A Supabase project with Google OAuth configured
+- A Supabase project with the authentication providers you intend to expose configured
 - Supabase CLI, only if you want to apply migrations locally
 
 ### Setup
@@ -72,6 +72,16 @@ npm run dev
 
 Open http://localhost:3000.
 
+### Authentication providers
+
+DeskOps supports Google, GitHub and passwordless email. Social providers still need to be enabled in the Supabase project before their buttons are exposed to users.
+
+- Add `https://deskops.sbs/auth/callback` to the Supabase redirect allow list.
+- For GitHub, create an OAuth app whose authorisation callback is `https://<project-ref>.supabase.co/auth/v1/callback`, then add its client ID and secret to the Supabase GitHub provider.
+- For magic links, enable the Supabase email provider and production SMTP. The default PKCE confirmation URL returns to `/auth/callback`. If you use a token-hash email template, point it to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`.
+
+Do not publish a shared username and password. Each judge or tester should authenticate separately, then use **Set up demo workspace** to create isolated generic sample data.
+
 ### Optional Supabase keepalive worker
 
 The scheduled worker in `frontend/keepalive/` is optional. It has no project-specific values in source control. If you use it, configure the target project in Cloudflare before deployment:
@@ -102,6 +112,8 @@ npm run worker:deploy
 
 The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudflare account step.
 
+The first deployment of this release also provisions the SQLite-backed `AgentRateLimiter` Durable Object declared in `frontend/wrangler.jsonc`. DeskOps addresses one object per authenticated user, so AI limits are atomic across Worker isolates without concentrating all users in one object.
+
 ## Useful commands
 
 | Command | Purpose |
@@ -125,6 +137,7 @@ The custom-domain binding for `deskops.sbs` is intentionally a separate Cloudfla
 - `frontend/app/actions/` holds server actions for tickets and streams.
 - `frontend/components/` holds the product UI.
 - `frontend/lib/db/` contains typed Supabase access helpers.
+- `frontend/lib/agent/` contains the draft-only AI boundary and its production Durable Object limiter.
 - `supabase/migrations/` is the source of truth for the database schema.
 - `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
 
@@ -135,6 +148,8 @@ The root package is an npm workspace orchestrator, so the documented `npm run ..
 `OPENAI_API_KEY` and `OPENAI_MODEL` are server-only variables. The Build Week configuration uses `OPENAI_MODEL=gpt-5.6`, the current GPT-5.6 alias. DeskOps sends natural-language ticket text to the Responses API with `store: false`.
 
 AI never writes tickets or takes an external action. It only produces a draft for the signed-in user to review.
+
+Production AI calls are limited per authenticated user through a SQLite-backed Cloudflare Durable Object. Local Next.js development and unit tests use an in-process fallback because OpenNext does not expose Worker-owned Durable Objects to `next dev`.
 
 ## Build Week build
 
