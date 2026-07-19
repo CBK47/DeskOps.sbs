@@ -44,7 +44,7 @@ npm run self-host
 
 Docker Desktop or OrbStack must be running. The launcher prints the local app and login-inbox addresses; use email sign-in and open the captured magic link locally. App data stays in local Docker volumes, services bind only to `127.0.0.1`, and external AI is off by default.
 
-See [self-host/README.md](self-host/README.md) for backups, shutdown, optional AI and the boundary between private local use and a public production deployment.
+See [docs/self-host/README.md](docs/self-host/README.md) for backups, shutdown, optional AI and the boundary between private local use and a public production deployment.
 
 ### Managed Supabase development
 
@@ -160,7 +160,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 - `frontend/components/` holds the product UI.
 - `frontend/lib/db/` contains typed Supabase access helpers.
 - `frontend/lib/agent/` contains the draft-only AI boundary and its production Durable Object limiter.
-- `self-host/` contains the optional private one-computer launcher and its operating guide.
+- `docs/self-host/` contains the optional private one-computer launcher and its operating guide.
 - `supabase/migrations/` is the source of truth for the database schema, while `supabase/examples/` contains safe optional seed templates.
 - `personal/` is ignored for private local customisation.
 

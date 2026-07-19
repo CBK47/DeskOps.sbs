@@ -4,7 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const localNetworkName = "deskops-local-loopback";
