@@ -18,6 +18,7 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Installable PWA with light and dark themes
 - A private, skippable Wellness Wheel across eight Dimensions of Wellness
 - Dated assessment history with user-chosen focus and reminder preferences
+- A public `/demo` sandbox with six clearly simulated agents, synthetic streams and browser-local approval
 - Natural-language ticket drafting with GPT-5.6, always editable and saved only by the user
 - One calm Rebalance suggestion chosen deterministically from the latest tracked Wellness gap, then drafted as one editable ticket
 
@@ -150,6 +151,12 @@ The root package is an npm workspace orchestrator, so the documented `npm run ..
 AI never writes tickets or takes an external action. It only produces a draft for the signed-in user to review.
 
 Production AI calls are limited per authenticated user through a SQLite-backed Cloudflare Durable Object. Local Next.js development and unit tests use an in-process fallback because OpenNext does not expose Worker-owned Durable Objects to `next dev`.
+
+### Public demo agents
+
+`/demo` is a no-sign-in, synthetic sandbox for Build Week reviewers. It does not use a shared account, Supabase data, external tools, credentials or a live model provider. Six named roles are provider-neutral simulated personas, and every proposal requires an explicit local approval before it enters the browser-only queue.
+
+The public demo has a separate global Durable Object budget, event window, per-browser daily allowance, concurrency ceiling, timeout and kill switch. See [the demo-agent runbook](docs/DEMO-AGENTS.md) before enabling, deploying or disabling it.
 
 ## Build Week build
 

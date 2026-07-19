@@ -205,6 +205,7 @@ export default function LoginPage() {
             <p id="login-email-note" className="mt-2 text-xs leading-5 text-muted-foreground">
               New here? Sign in, then choose <span className="text-foreground">Set up demo workspace</span> for private sample data.
             </p>
+            <Link href="/demo" className="text-link mt-4 inline-flex text-xs">Explore the public synthetic demo instead</Link>
           </div>
         </div>
 

@@ -6,6 +6,15 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": false,
   "preview_urls": false,
+  "vars": {
+    "DEMO_AGENTS_ENABLED": "true",
+    "DEMO_AGENT_EVENT_START_AT": "2026-07-19T00:00:00.000Z",
+    "DEMO_AGENT_EVENT_END_AT": "2026-08-02T23:59:59.999Z",
+    "DEMO_AGENT_USER_DAILY_LIMIT": "12",
+    "DEMO_AGENT_GLOBAL_DAILY_LIMIT": "300",
+    "DEMO_AGENT_MAX_CONCURRENCY": "4",
+    "DEMO_AGENT_TIMEOUT_MS": "8000"
+  },
   "routes": [
     {
       "pattern": "deskops.sbs",
@@ -27,11 +36,19 @@
       {
         "name": "AGENT_RATE_LIMITER",
         "class_name": "AgentRateLimiter"
+      },
+      {
+        "name": "DEMO_AGENT_BUDGET",
+        "class_name": "DemoAgentBudget"
       }
     ]
   },
   "exports": {
     "AgentRateLimiter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    },
+    "DemoAgentBudget": {
       "type": "durable-object",
       "storage": "sqlite"
     }

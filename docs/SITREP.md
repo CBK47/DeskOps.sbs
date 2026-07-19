@@ -16,7 +16,7 @@ Do not treat them as the same state.
 
 ## Executive status
 
-The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented, verified and merged to `main`. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
+The redesign, private Wellness foundation, secured AI draft boundary, Rebalance V1, expanded login and production-grade AI limiter are implemented, verified and merged to `main`. A separate `codex/demo-agent-sandbox` release branch is adding a public synthetic Demo Agents sandbox. The additive Wellness migration is live in the confirmed production Supabase project. The Cloudflare Worker has not been promoted and `https://deskops.sbs` still serves the pre-redesign application.
 
 The release branch can be pushed safely, but a full demo deployment remains gated on the missing `OPENAI_API_KEY` and `OPENAI_MODEL` Worker secrets. GitHub and email login are implemented with provider-aware visibility, but Supabase must still be given a GitHub OAuth app and production SMTP before those options become live.
 
@@ -59,6 +59,15 @@ The current `main` release changes add provider-aware Google, GitHub and email m
 - No shared demo credentials: each tester signs in separately and can create private generic sample data with **Set up demo workspace**.
 - Public privacy, terms and not-found pages.
 - Restrained marketing reveals with a no-JavaScript fallback and reduced-motion support.
+
+### Pending public Demo Agents branch
+
+- A no-sign-in `/demo` sandbox with browser-scoped synthetic data rather than shared credentials or a real demo account.
+- Six provider-neutral, explicitly simulated personas: Echo, Skippy, Codex, Claude, Xiangwei and Spark.
+- Structured, validated proposals; fixed per-agent stream permissions; a human approval checkpoint; and a browser-local demo queue.
+- No external Gmail, memory, credentials, model provider or production-system access.
+- A second Durable Object gate with per-browser daily allowance, global daily budget, start/end window, timeout, concurrency ceiling and a Worker-secret kill switch.
+- Routing, synthetic-input security, permission, approval, limiter and end-to-end coverage. Release status is pending branch verification and controlled deployment.
 
 ### Authenticated product
 

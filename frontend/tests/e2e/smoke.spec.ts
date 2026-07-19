@@ -27,7 +27,7 @@ test("marketing content remains available without JavaScript", async ({ browser 
 test("public entry points fit a phone viewport without horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
-  for (const path of ["/", "/login"]) {
+  for (const path of ["/", "/login", "/demo"]) {
     await page.goto(path);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(overflows, `${path} should fit the viewport`).toBe(false);
@@ -51,4 +51,21 @@ test("login offers social and passwordless entry without a shared demo account",
   await expect(page.getByLabel("Email address")).toBeVisible();
   await expect(page.getByRole("button", { name: "Email me a link" })).toBeVisible();
   await expect(page.getByText(/set up demo workspace/i)).toBeVisible();
+});
+
+test("public demo uses synthetic agents and keeps approval local to the browser", async ({ page }) => {
+  await page.goto("/demo");
+  await expect(page.getByRole("heading", { name: /meet the demo agents/i })).toBeVisible();
+  await expect(page.getByText(/no sign-in required/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /spark.*local infrastructure/i })).toBeVisible();
+
+  await page.getByRole("button", { name: /spark.*local infrastructure/i }).click();
+  await page.getByLabel("Demo stream").selectOption("systems");
+  await page.getByLabel("Synthetic demo scenario").fill("Check the synthetic backup monitor and draft one reversible recovery step.");
+  await page.getByRole("button", { name: "Draft proposal" }).click();
+
+  await expect(page.getByRole("button", { name: /add to demo queue/i })).toBeVisible();
+  await page.getByRole("button", { name: /add to demo queue/i }).click();
+  await expect(page.getByRole("status")).toContainText(/nothing was saved to a real account/i);
+  await expect(page.getByRole("heading", { name: /synthetic demo queue/i })).toBeVisible();
 });

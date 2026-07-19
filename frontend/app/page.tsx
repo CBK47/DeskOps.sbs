@@ -28,6 +28,7 @@ export default function LandingPage() {
         </Link>
         <nav className="flex items-center gap-2" aria-label="Public navigation">
           <Link href="#dimensions" className="hidden rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:block">The Wheel</Link>
+          <Link href="/demo" className="hidden rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:block">Demo</Link>
           <Link href="/login" className="text-link">Sign in</Link>
         </nav>
       </header>
@@ -46,7 +47,7 @@ export default function LandingPage() {
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <Link href="/wellness?first=1" className="primary-cta">Start your Wellness Wheel <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-                <Link href="/login" className="secondary-cta">Sign in with Google</Link>
+                <Link href="/demo" className="secondary-cta">Explore the synthetic demo</Link>
               </div>
               <p className="mt-5 text-sm text-muted-foreground">Private by default. Skippable by design. AI cannot act without your approval.</p>
             </div>
@@ -166,7 +167,7 @@ export default function LandingPage() {
             <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">You can skip every question, change focus later, and keep untracked dimensions out of the maths.</p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href="/wellness?first=1" className="primary-cta">Start your Wellness Wheel <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-              <Link href="/login" className="secondary-cta">Sign in with Google</Link>
+              <Link href="/demo" className="secondary-cta">Explore the synthetic demo</Link>
             </div>
           </Reveal>
         </section>
