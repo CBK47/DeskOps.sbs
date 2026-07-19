@@ -22,16 +22,15 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 - Natural-language ticket drafting with GPT-5.6, always editable and saved only by the user
 - One calm Rebalance suggestion chosen deterministically from the latest tracked Wellness gap, then drafted as one editable ticket
 
-## Stack
+## Choose how to use DeskOps
 
-- Next.js 15, React 18, TypeScript, Tailwind CSS, and Base UI/shadcn components
-- Supabase for Postgres, authentication, and row-level security
-- Cloudflare Workers through OpenNext for deployment
-- Vitest and Playwright for testing
+### 1. Try the hosted version
 
-## Run it locally
+Use the [public first-session demo](https://deskops.sbs/demo) without signing in, or [create your own isolated workspace](https://deskops.sbs/login) with Google, GitHub or an email magic link.
 
-### Private one-computer setup
+The hosted version runs in CBK's Supabase and Cloudflare tenancy. Light, good-faith evaluation is welcome while it remains within the project's free hosting allowances. Treat it as a best-effort preview rather than a service with an uptime or data-retention guarantee, and do not enter sensitive, confidential or irreplaceable information. The public demo is the safest way to explore: it uses synthetic data, simulated agents and browser-local state.
+
+### 2. Run it privately on one computer
 
 The quickest self-hosted option runs DeskOps, its database, authentication and a login-email inbox on your own computer. It does not require a Supabase account or project:
 
@@ -46,7 +45,22 @@ Docker Desktop or OrbStack must be running. The launcher prints the local app an
 
 See [docs/self-host/README.md](docs/self-host/README.md) for backups, shutdown, optional AI and the boundary between private local use and a public production deployment.
 
-### Managed Supabase development
+### 3. Host your own remote instance
+
+For a durable personal or team deployment, connect DeskOps to services you control. The Next.js application can be adapted to several Node, container, serverless or edge hosts. The current data and authentication code expects Supabase, so another database or identity provider would require an adapter rather than only an environment-variable change.
+
+The reference deployment used by [deskops.sbs](https://deskops.sbs) is:
+
+- **Application:** Next.js 15, React 18, TypeScript, Tailwind CSS and Base UI/shadcn components
+- **Database and authentication:** Supabase Cloud with Postgres, Supabase Auth and row-level security
+- **Web hosting:** Cloudflare Workers through OpenNext, with static assets and the custom domain served by Cloudflare
+- **Optional AI:** OpenAI Responses API using GPT-5.6; the server-side key is never exposed to the browser
+- **AI limits:** SQLite-backed Cloudflare Durable Objects for per-user and public-demo budgets
+- **Quality gates:** TypeScript, ESLint, Vitest, Playwright and GitHub Actions
+
+Supabase can also be self-hosted, and the application can be deployed to another Next.js-compatible platform. Those routes are supported by the open-source architecture, but the instructions below deliberately use the current reference stack because it is the shortest tested remote-deployment path.
+
+## Deploy with the reference stack
 
 ### Prerequisites
 
