@@ -31,6 +31,23 @@ DeskOps is an open-source entry for OpenAI Build Week in **Apps for Your Life**.
 
 ## Run it locally
 
+### Private one-computer setup
+
+The quickest self-hosted option runs DeskOps, its database, authentication and a login-email inbox on your own computer. It does not require a Supabase account or project:
+
+```bash
+git clone https://github.com/CBK47/DeskOps.sbs.git
+cd DeskOps.sbs
+npm install
+npm run self-host
+```
+
+Docker Desktop or OrbStack must be running. The launcher prints the local app and login-inbox addresses; use email sign-in and open the captured magic link locally. App data stays in local Docker volumes, services bind only to `127.0.0.1`, and external AI is off by default.
+
+See [docs/SELF-HOSTING.md](docs/SELF-HOSTING.md) for backups, shutdown, optional AI and the boundary between private local use and a public production deployment.
+
+### Managed Supabase development
+
 ### Prerequisites
 
 - Node.js 22 or newer
@@ -120,6 +137,9 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Run the local development server |
+| `npm run self-host` | Run DeskOps with a private local Supabase stack |
+| `npm run self-host:backup` | Export local self-hosted table data to an ignored backup file |
+| `npm run self-host:stop` | Stop local Supabase services without deleting their data |
 | `npm run typecheck` | Run strict TypeScript checks |
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run Vitest unit tests |
@@ -140,6 +160,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 - `frontend/components/` holds the product UI.
 - `frontend/lib/db/` contains typed Supabase access helpers.
 - `frontend/lib/agent/` contains the draft-only AI boundary and its production Durable Object limiter.
+- `scripts/self-host.mjs` injects local-only Supabase credentials into the development process.
 - `supabase/migrations/` is the source of truth for the database schema.
 - `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
 

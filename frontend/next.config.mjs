@@ -5,6 +5,8 @@ const nextConfig = {
   outputFileTracingRoot: new URL("../", import.meta.url).pathname,
 };
 
-initOpenNextCloudflareForDev();
+if (process.env.DESKOPS_SELF_HOST !== "true") {
+  initOpenNextCloudflareForDev();
+}
 
 export default nextConfig;

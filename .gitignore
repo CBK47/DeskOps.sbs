@@ -57,5 +57,8 @@ next-env.d.ts
 # local-only personal customisations
 /personal/
 
+# local self-hosted data exports
+/backups/
+
 # local-only plans, operating records, and release runbooks
 /private/

@@ -10,6 +10,9 @@
   },
   "scripts": {
     "dev": "npm --workspace @deskops/frontend run dev",
+    "self-host": "node scripts/self-host.mjs",
+    "self-host:stop": "supabase stop --workdir . --agent=no",
+    "self-host:backup": "node -e \"require('node:fs').mkdirSync('backups', { recursive: true })\" && supabase db dump --local --data-only --file backups/deskops-data.sql --workdir . --agent=no",
     "build": "npm --workspace @deskops/frontend run build",
     "start": "npm --workspace @deskops/frontend run start",
     "lint": "npm --workspace @deskops/frontend run lint",
@@ -30,6 +33,7 @@
     "hono": "^4.12.30",
     "js-yaml": "^4.3.0",
     "qs": "^6.15.3",
+    "supabase": "2.109.1",
     "vite": "^8.0.16"
   }
 }
