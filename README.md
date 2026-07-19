@@ -215,11 +215,11 @@ The dated evidence boundary is explicit: `5e6ed8d` is the sanitised import of th
 
 The public repository preserves the sanitised prior-work boundary and source history. Internal release records, deployment details and working plans are deliberately maintained outside the public repository.
 
-Ideas, issue reports, and early contributors are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Ideas, issue reports, and early contributors are very welcome. See [the contribution guide](.github/CONTRIBUTING.md).
 
 ## Security and privacy
 
-DeskOps stores personal task data. Never commit `.env.local`, Supabase service-role keys, Cloudflare API tokens, or real user data. Please report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+DeskOps stores personal task data. Never commit `.env.local`, Supabase service-role keys, Cloudflare API tokens, or real user data. Please report vulnerabilities privately as described in [the security policy](.github/SECURITY.md).
 
 ## Licence
 
