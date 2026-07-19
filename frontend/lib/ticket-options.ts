@@ -23,7 +23,7 @@ export const STATUS_ITEMS = [
   { value: "cancelled",   label: "Cancelled" },
 ] as const;
 
-// Raw enum values never reach the UI (DESIGN.md) — look labels up here.
+// Raw enum values never reach the UI (docs/DESIGN.md) — look labels up here.
 function toLabels(items: ReadonlyArray<{ value: string; label: string }>): Record<string, string> {
   return Object.fromEntries(items.map((i) => [i.value, i.label]));
 }

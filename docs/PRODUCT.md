@@ -1,4 +1,4 @@
-# DeskOps Product Context
+# DeskOps product context
 
 ## Register
 

@@ -60,5 +60,11 @@ next-env.d.ts
 # local self-hosted data exports
 /backups/
 
+# local agent instructions and generated code-intelligence scaffolding
+/CLAUDE.md
+/AGENTS.md
+/.claude/
+/.gitnexus/
+
 # local-only plans, operating records, and release runbooks
 /private/

@@ -56,4 +56,4 @@ flowchart LR
 - The public demo does not create an account or write to Supabase.
 - Deployment targets, credentials, operational limits, and release runbooks are not published in this repository.
 
-For local development and release commands, see the [README](../README.md). For the Build Week scope and evidence boundary, see [HACKATHON.md](../HACKATHON.md).
+For local development and release commands, see the [README](../README.md). For the Build Week scope and evidence boundary, see [BUILD-WEEK.md](BUILD-WEEK.md).

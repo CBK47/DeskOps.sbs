@@ -1,4 +1,4 @@
-# DeskOps: Design Contract
+# DeskOps design contract
 
 Read this before any UI change. Deviations must be deliberate and explainable.
 

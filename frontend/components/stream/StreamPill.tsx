@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-// Dark-aware per DESIGN.md: solid pastels for light, alpha tints + 300-level
+// Dark-aware per docs/DESIGN.md: solid pastels for light, alpha tints + 300-level
 // text for dark so pills sit on any surface without glowing.
 const COLOR_CLASSES: Record<string, string> = {
   slate:   "bg-slate-100 text-slate-800 dark:bg-slate-500/15 dark:text-slate-300",

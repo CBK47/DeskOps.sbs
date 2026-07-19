@@ -5,7 +5,7 @@ import { PRIORITY_LABELS, RECURRENCE_LABELS } from "@/lib/ticket-options";
 import type { Ticket } from "@/lib/db/tickets";
 import { toLondonIsoDate } from "@/lib/dates";
 
-// Dark-aware per DESIGN.md.
+// Dark-aware per docs/DESIGN.md.
 const PRIORITY_COLOR: Record<string, string> = {
   low:    "bg-zinc-100 text-zinc-700 dark:bg-zinc-500/15 dark:text-zinc-300",
   medium: "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300",

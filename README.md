@@ -164,7 +164,7 @@ The first deployment of this release also provisions the SQLite-backed `AgentRat
 - `supabase/migrations/` is the source of truth for the database schema.
 - `personal.example/` contains safe templates; `personal/` is ignored for private local customisation.
 
-The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the public system map and [docs/PERSONAL.md](docs/PERSONAL.md) before adding local personal data.
+The root package is an npm workspace orchestrator, so the documented `npm run ...` commands work from the repository root. See the public [architecture](docs/ARCHITECTURE.md), [product context](docs/PRODUCT.md), and [design contract](docs/DESIGN.md), and read [personal customisation](docs/PERSONAL.md) before adding local personal data.
 
 ## OpenAI configuration
 
@@ -191,7 +191,7 @@ The demo focuses on this end-to-end flow:
 
 The public demo seed is deliberately generic. Do not commit or display real personal, client, health, or financial data.
 
-See [HACKATHON.md](HACKATHON.md) for the Build Week scope and prior-work boundary.
+See [docs/BUILD-WEEK.md](docs/BUILD-WEEK.md) for the Build Week scope and prior-work boundary.
 
 ## Built with Codex
 

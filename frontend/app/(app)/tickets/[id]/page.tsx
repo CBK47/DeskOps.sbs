@@ -9,7 +9,7 @@ import { STATUS_LABELS } from "@/lib/ticket-options";
 import Link from "next/link";
 import { PendingButton } from "@/components/ui/pending-button";
 
-// Dark-aware per DESIGN.md.
+// Dark-aware per docs/DESIGN.md.
 const STATUS_COLOR: Record<string, string> = {
   open:        "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300",
   in_progress: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",

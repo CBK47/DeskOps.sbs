@@ -136,7 +136,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "cv11";
-    /* Single depth layer (DESIGN.md): fixed radial field in CBK blue.
+    /* Single depth layer (docs/DESIGN.md): fixed radial field in CBK blue.
        Painted on body's own background so there are no stacking-context games. */
     background-image: radial-gradient(
       900px 500px at 50% -10%,

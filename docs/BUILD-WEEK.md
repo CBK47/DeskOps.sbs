@@ -1,4 +1,4 @@
-# DeskOps, OpenAI Build Week
+# DeskOps — OpenAI Build Week
 
 ## Category
 
